@@ -1,5 +1,5 @@
-# launch-config</br>
-</br>
+# launch-config
+
 
 ## This vscode extension allows you to create a setting that identifies one of your `launch.json` configurations to run via a keybinding.
 </br>
@@ -8,7 +8,7 @@
 
 
 ## Extension Settings
-</br>
+
 
 ### This extension contributes two settings:</br></br>
 
@@ -34,10 +34,10 @@
 ```
 
 
-`launch-config.openDebug`: Open the Run/Debug View when running above command.
+`launch-config.openDebug`: Open the Run/Debug View when running above command. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Default = `true`.
 
 ```json
-"launch-config.openDebug": true,  // default = true
+"launch-config.openDebug": true,
 ```
 
 -----------------------------------------------------------------------------------------------
@@ -49,11 +49,13 @@
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; DEFAULT KEYBINDING:
 </br>
 
-![Default Keybinding](images\defaultKeyboardShortcut.jpg)</br></br></br>
+![Default Keybinding](images/defaultKeyboardShortcut.jpg)
+
+</br>
 
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; CUSTOM KEYBINDING:
 
-![Custom Keybinding](images\customKeybinding.jpg)
+![Custom Keybinding](images/customKeybinding.jpg)
 
 -------------------------
 </br>
@@ -75,6 +77,7 @@
 ## Release Notes
 
 &emsp;&emsp;&emsp;0.0.1  Initial release of `launch-config` extension
+
 &emsp;&emsp;&emsp;0.0.2  Added readme file and images
 
 
