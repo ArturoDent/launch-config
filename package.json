@@ -1,0 +1,74 @@
+{
+	"name": "launch-config",
+	"displayName": "Launch A Config",
+	"description": "Shortcut to launch specific debug configurations",
+	"publisher": "potoococha",
+	"version": "0.0.1",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ArturoDent/launch-config"
+	},
+	"engines": {
+		"vscode": "^1.50.0"
+	},
+	"categories": [
+		"Debuggers"
+	],
+	"keywords": [
+		"launch",
+		"debug",
+		"keybinding"
+	],
+	"activationEvents": [
+		"onCommand:launch-config.launchConfig"
+	],
+	"main": "./src/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "launch-config.launchConfig",
+				"title": "Launch a debug configuration"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Debug Configuration",
+			"properties": {
+				"launch-config.runLaunchConfiguration": {
+					"type": "object",
+					"default": {"name": "launch config 'name' to run here"},
+					"description": "Use the 'name' field to identify a launch configuration."
+				},
+        "launch-config.openDebug": {
+					"type": "boolean",
+					"default": true,
+					"description": "Whether to open the Run/Debug view."
+				}
+			}
+		},
+		"keybindings": [
+			{
+				"command": "launch-config.launchConfig",
+				"key": "alt+f",
+				"mac": "option+f"
+			}
+		]
+	},
+	"scripts": {
+		"lint": "eslint .",
+		"pretest": "npm run lint",
+		"test": "node ./test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^7.0.2",
+		"@types/node": "^13.11.0",
+		"@types/vscode": "^1.50.0",
+		"eslint": "^6.8.0",
+		"glob": "^7.1.6",
+		"mocha": "^7.1.2",
+		"typescript": "^3.8.3",
+		"vscode-test": "^1.3.0"
+	}
+}
