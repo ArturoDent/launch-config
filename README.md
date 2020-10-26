@@ -48,13 +48,25 @@ See the note below in `Known Issues` about the `openDebug` setting.
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; DEFAULT KEYBINDING:
 </br>
 
-![Default Keybinding](images/defaultKeyboardShortcut.jpg)
+![Default Keybinding](images/defaultKeyboardShortcut.jpg) 
 
 </br>
 
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; CUSTOM KEYBINDING:
 
-![Custom Keybinding](images/customKeybinding.jpg)
+Choose whatever different keybinding you wish, shown here as <kbd>alt</kbd>+<kbd>l</kbd>.  The second entry removes the default <kbd>alt</kbd>+<kbd>f</kbd> version. 
+
+```json
+{
+  "key": "alt+l",
+  "command": "launch-config.launchConfig"
+},
+
+{
+  "key": "alt+f",
+  "command": "-launch-config.launchConfig"
+}
+  ```
 
 -------------------------
 
