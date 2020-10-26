@@ -38,13 +38,15 @@
 "launch-config.openDebug": true,
 ```
 
-See the note below in `Known Issues` about the `openDebug` setting.
+See the note below in `Known Issues` about the `launch-config.openDebug` setting.
 
 -----------------------------------------------------------------------------------------------
 
 
 
-## Keybindings</br>
+## Command and Keybindings</br>
+
+This extension contributes one command:  `launch-config.launchConfig` which can be found in the command palette or triggered by a keybinding.  It has a default keybinding: <kbd>Alt</kbd>+<kbd>f</kbd> (<kbd>Option</kbd>+<kbd>f</kbd> on the Mac).
 
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; DEFAULT KEYBINDING:
 </br>
@@ -55,7 +57,7 @@ See the note below in `Known Issues` about the `openDebug` setting.
 
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; CUSTOM KEYBINDING:
 
-Choose whatever different keybinding you wish, shown here as <kbd>alt</kbd>+<kbd>l</kbd>.  The second entry removes the default <kbd>alt</kbd>+<kbd>f</kbd> version. 
+Choose whatever different keybinding you wish, shown here as <kbd>Alt</kbd>+<kbd>l</kbd>.  The second entry removes the default <kbd>Alt</kbd>+<kbd>f</kbd> version. 
 
 ```json
 {
