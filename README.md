@@ -11,7 +11,7 @@
 
 ### This extension contributes two settings:</br></br>
 
-`launch-config.runLaunchConfiguration`: Identify by `name` which launch.json configuration you would like to run.</br>
+- `launch-config.runLaunchConfiguration`: Identify by `name` which launch.json configuration you would like to run.</br>
 
 ```json
 "launch-config.runLaunchConfiguration": {
@@ -32,7 +32,7 @@
 ```
 </br>
 
-`launch-config.openDebug`: Open the Run/Debug View when running above command. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Default = `true`.
+- `launch-config.openDebug`: Open the Run/Debug View when running above command. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Default = `true`.
 
 ```json
 "launch-config.openDebug": true,
@@ -45,14 +45,14 @@ See the note below in `Known Issues` about the `openDebug` setting.
 
 ## Keybindings</br>
 
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; DEFAULT KEYBINDING:
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; DEFAULT KEYBINDING:
 </br>
 
 ![Default Keybinding](images/defaultKeyboardShortcut.jpg)
 
 </br>
 
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; CUSTOM KEYBINDING:
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; CUSTOM KEYBINDING:
 
 ![Custom Keybinding](images/customKeybinding.jpg)
 
