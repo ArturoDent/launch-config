@@ -1,6 +1,5 @@
 const vscode = require('vscode');
-const retrieve = require('./getLaunchConfigsAndSettings');
-const run = require('./triggerLaunchDebug');
+const settings = require('./settings');
 
 
 /**
@@ -14,22 +13,18 @@ function activate(context) {
 
 	let disposable = vscode.commands.registerCommand('launch-config.launchConfig', async function () {
 
-    // get all the launch.json configurations
-    let configs = await retrieve.getLaunchConfigurations();
-
     // get the user's setting for which config to run/debug
-    let settingsLaunchConfigName = await retrieve.extensionLaunchSetting();
-
-    // match the user setting: 'runLaunchConfiguration.name' to launch.json configurations 'name's
-    if (settingsLaunchConfigName) {
-      let found = await retrieve.findSelectedLaunchFromConfigs(configs, settingsLaunchConfigName);
-      await run.config(found);
+    let settingsLaunchConfigName = settings.getExtensionLaunchSetting();
+    if (!settingsLaunchConfigName) {
+      await vscode.window.showInformationMessage(`There is no 'launch-config.runLaunchConfiguration' setting.`);
+      return;
     }
-    else return;
+    else {
+      let thisWorkspace = vscode.workspace.workspaceFolders[0];
+      vscode.debug.startDebugging(thisWorkspace, settingsLaunchConfigName);
+      return;
+    }
 
-    // Open the debug view?  Check user setting: 'openDebug', default true
-    let settingsOpenDebug = await retrieve.extensionOpenDebugSetting();
-    if (settingsOpenDebug) await run.openDebugView();
 	});
 
 	context.subscriptions.push(disposable);

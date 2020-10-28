@@ -1,9 +1,10 @@
 {
 	"name": "launch-config",
 	"displayName": "Launch A Config",
-	"description": "Shortcut to launch specific debug configurations",
-	"publisher": "potoococha",
-	"version": "0.0.1",
+	"description": "Shortcut to launch a specific debug configuration",
+	"publisher": "ArturoDent",
+	"version": "0.0.3",
+  "preview": true,
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -39,11 +40,6 @@
 					"type": "object",
 					"default": {"name": "launch config 'name' to run here"},
 					"description": "Use the 'name' field to identify a launch configuration."
-				},
-        "launch-config.openDebug": {
-					"type": "boolean",
-					"default": true,
-					"description": "Whether to open the Run/Debug view."
 				}
 			}
 		},
