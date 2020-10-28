@@ -17,14 +17,11 @@ function activate(context) {
     let settingsLaunchConfigName = settings.getExtensionLaunchSetting();
     if (!settingsLaunchConfigName) {
       await vscode.window.showInformationMessage(`There is no 'launch-config.runLaunchConfiguration' setting.`);
-      return;
     }
     else {
       let thisWorkspace = vscode.workspace.workspaceFolders[0];
       vscode.debug.startDebugging(thisWorkspace, settingsLaunchConfigName);
-      return;
     }
-
 	});
 
 	context.subscriptions.push(disposable);

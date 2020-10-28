@@ -27,7 +27,7 @@ or
 ```
 
 
-&emsp;&emsp;&emsp;The `name` comes from one of your launch compounds/configurations in the `launch.json` file.  The `name` key and value can be anywhere within its configuration - it does not need to be first.  For example,
+&emsp;&emsp;&emsp;The `name` comes from one of your launch compounds/configurations in the `launch.json` file.  The `name` key and value can be anywhere within its configuration - it does not need to be first.  An example `launch.json` file,
 
 ```json
 {
@@ -115,11 +115,12 @@ Or choose whatever different keybinding you wish, shown here as <kbd>Alt</kbd>+<
 
 ## Release Notes
 
-&emsp;&emsp;&emsp;0.0.1  Initial release of `launch-config` extension
+&emsp;&emsp;&emsp;0.0.1   Initial release of `launch-config` extension
 
-&emsp;&emsp;&emsp;0.0.2  Added readme file and images
+&emsp;&emsp;&emsp;0.0.2   Added readme file and images
 
-&emsp;&emsp;&emsp;0.0.3  Switched to `vscode.debug.startDebugging()` - much simpler
+&emsp;&emsp;&emsp;0.0.3   Switched to `vscode.debug.startDebugging()` - much simpler
+&emsp;&emsp;&emsp;0.0.31  Remove unnecessary `return`'s.
 
 
 </br>

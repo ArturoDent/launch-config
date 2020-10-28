@@ -3,7 +3,7 @@
 	"displayName": "Launch A Config",
 	"description": "Shortcut to launch a specific debug configuration",
 	"publisher": "ArturoDent",
-	"version": "0.0.3",
+	"version": "0.0.31",
   "preview": true,
 	"license": "MIT",
 	"repository": {
