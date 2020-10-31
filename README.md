@@ -1,7 +1,9 @@
 # launch-config
 
 
-## This vscode extension allows you to create a setting that identifies one of your `launch.json` configurations or compounds to run via a keybinding.
+### This vscode extension allows you to create settings to launch any number of your `launch.json` configurations or compounds via separate keybindings.</br></br>
+
+> **BREAKING CHANGE** v0.0.4 is a breaking change - to allow multiple keybindings the form of the setting had to change.
 
 -----------------------------------------------------------------------------------------------
 
@@ -11,31 +13,27 @@
 
 ### This extension contributes one setting:</br>
 
-- `launch-config.runLaunchConfiguration`: Identify by `name` which launch.json configuration you would like to run.  You can use `compounds` configurations as well.</br>
+- `launches` (an object of key:value pairs): Identify by using your `launch.json` `"name"` which configuration you would like to run.  You can use `"compounds"` configurations as well.</br>
+
+The first part of each entry, like `"RunNodeCurrentFile"`, can be anything you want (without spaces) - you will use it in the keybinding.  The second part, like `"Launch File"`, is the name of the configuration you would like to run.  &emsp; In `settngs.json`:
 
 ```json
-"launch-config.runLaunchConfiguration": {
-  "name": "Launch File"
-}
-```
-or
+  "launches": {
 
-```json
-"launch-config.runLaunchConfiguration": {
-  "name": "Start 2 node debuggers"
-}
+    "RunNodeCurrentFile": "Launch File",
+    "RunCompound1": "Launch file and start chrome"  
+  },
 ```
 
-
-&emsp;&emsp;&emsp;The `name` comes from one of your launch compounds/configurations in the `launch.json` file.  The `name` key and value can be anywhere within its configuration - it does not need to be first.  An example `launch.json` file,
+&emsp;&emsp;&emsp;The `name` key and value can be anywhere within its configuration - it does not need to be first.  An example `launch.json` file:
 
 ```json
 {
   "version": "0.2.0",
   "compounds": [
     {
-      "name": "Start 2 node debuggers",
-      "configurations": ["First Debugger", "Second Debugger"],
+      "name": "Launch file and start chrome",
+      "configurations": ["Launch File", "Launch Chrome against localhost"],
       "preLaunchTask": "Start server",
       "stopAll": true
     }
@@ -48,19 +46,12 @@ or
       "program": "${file}"
     },
     {
-      "name": "First Debugger",
-      "type": "node",
+      "type": "chrome",
       "request": "launch",
-      "program": "${workspaceFolder}/test.js",
-      "console": "integratedTerminal",
-      "preLaunchTask": "renameTerminal"
-    },
-    {
-      "name": "Second Debugger",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/gulpfile.js",
-      "console": "integratedTerminal",
+      "name": "Launch Chrome against localhost",
+      "url": "http://localhost:8080",
+      "webRoot": "${workspaceRoot}",
+      "file": "${workspaceRoot}/build.html"
     }
   ]
 }
@@ -72,31 +63,23 @@ or
 
 
 
-## Command and Keybindings</br>
+## Commands and Keybindings</br>
 
-This extension contributes one command:  `launch-config.launchConfig` which can be found in the command palette or triggered by a keybinding.  It has a default keybinding: <kbd>Alt</kbd>+<kbd>F</kbd> (<kbd>Option</kbd>+<kbd>F</kbd> on the Mac).
+This extension does not contribute any user-accessible commands.
 
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; DEFAULT KEYBINDING:
-</br>
+### Keybindings:
 
-![Default Keybinding](images/defaultKeyboardShortcut.jpg) 
-
-</br>
-
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; CUSTOM KEYBINDING:
-
-Or choose whatever different keybinding you wish, shown here as <kbd>Alt</kbd>+<kbd>L</kbd>.  The second entry removes the default <kbd>Alt</kbd>+<kbd>F</kbd> version. 
+Choose whatever different keybindings you wish.  In your `keybindings.json`, here are example keybindings:
 
 ```json
-{
-  "key": "alt+l",
-  "command": "launch-config.launchConfig"
-},
-
-{
-  "key": "alt+f",
-  "command": "-launch-config.launchConfig"
-}
+  {
+    "key": "alt+f",
+    "command": "launches.RunNodeCurrentFile"
+  },
+  {
+    "key": "alt+g",
+    "command": "launches.RunCompound1"
+  }
   ```
 
 -------------------------
@@ -107,20 +90,30 @@ Or choose whatever different keybinding you wish, shown here as <kbd>Alt</kbd>+<
 
 ## TODO
 
-- [&nbsp; &nbsp;] - Add better error notifications: no setting, missing key, no match found - may not be possible using `debug.startDebugging()`.
-- [&nbsp; &nbsp;] - Investigate support for more keybindings
-- [&nbsp; &nbsp;] - Provide intellisense for `launch-config.runLaunchConfiguration` setting key: `name`
+- [&nbsp; &nbsp;&nbsp;] - Add better error notifications: no setting, missing key, no match found - may not be possible using `debug.startDebugging()`.
+- [ X ] - Investigate support for more keybindings
+- [&nbsp; &nbsp;&nbsp;] - Provide intellisense for `launches` settings, get all `"names"` fron launch.json
+
+-------------------------
+
+## Thank you
+
+For the addition of the ability to bind any number of launch configurations to keybindings, I relied heavily on the code from [Jeff Hykin and macro-commander](https://marketplace.visualstudio.com/items?itemName=jeff-hykin.macro-commander).
 
 -------------------------
 
 ## Release Notes
 
-&emsp;&emsp;&emsp;0.0.1   Initial release of `launch-config` extension
+* 0.0.1   Initial release of `launch-config` extension
 
-&emsp;&emsp;&emsp;0.0.2   Added readme file and images
+* 0.0.2   Added readme file and images
 
-&emsp;&emsp;&emsp;0.0.3   Switched to `vscode.debug.startDebugging()` - much simpler
-&emsp;&emsp;&emsp;0.0.31  Remove unnecessary `return`'s.
+* 0.0.3   Switched to `vscode.debug.startDebugging()` - much simpler
+
+&emsp;&emsp;&emsp;&emsp;&emsp;0.0.31  Remove unnecessary `return`'s.
+
+* 0.0.4   **BREAKING CHANGE** Added ability to bind any number of launch configs 
+ 
 
 
 </br>

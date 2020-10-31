@@ -1,9 +1,9 @@
 {
 	"name": "launch-config",
 	"displayName": "Launch A Config",
-	"description": "Shortcut to launch a specific debug configuration",
+	"description": "Create shortcuts to launch a specific debug configurations",
 	"publisher": "ArturoDent",
-	"version": "0.0.31",
+	"version": "0.0.4",
   "preview": true,
 	"license": "MIT",
 	"repository": {
@@ -22,34 +22,18 @@
 		"keybinding"
 	],
 	"activationEvents": [
-		"onCommand:launch-config.launchConfig"
+		"*"
 	],
 	"main": "./src/extension.js",
 	"contributes": {
-		"commands": [
-			{
-				"command": "launch-config.launchConfig",
-				"title": "Launch a debug configuration"
-			}
-		],
-		"configuration": {
-			"type": "object",
-			"title": "Debug Configuration",
-			"properties": {
-				"launch-config.runLaunchConfiguration": {
-					"type": "object",
-					"default": {"name": "launch config 'name' to run here"},
-					"description": "Use the 'name' field to identify a launch configuration."
-				}
-			}
-		},
-		"keybindings": [
-			{
-				"command": "launch-config.launchConfig",
-				"key": "alt+f",
-				"mac": "option+f"
-			}
-		]
+
+    "configuration": {
+      "type": "object",
+      "title": "Launches Debug Configuration",
+      "properties": {
+          "launches": {}
+      }
+    }
 	},
 	"scripts": {
 		"lint": "eslint .",

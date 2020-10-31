@@ -1,0 +1,29 @@
+// const keybindingsPath = process.env.APPDATA + '\\Code\\User\\keybindings.json';
+  // let docFilter = [{ language: 'json', scheme: '*', pattern: keybindingsPath }];
+
+  // const configCompletionProvider = vscode.languages.registerCompletionItemProvider (
+  //   'json',
+  //   {
+  //      // eslint-disable-next-line no-unused-vars
+  //     provideCompletionItems(document, position, token, context) {
+
+  //       const launches = vscode.workspace.getConfiguration("launches");
+  //       let completionItemArray = [];
+  //       for (const name in launches) {
+  //         // skip the things that are not Strings
+  //         if ((typeof launches[name] !== 'string')) {
+  //             continue;
+  //         }
+  //         else {
+  //           completionItemArray.push(new vscode.CompletionItem(`"launches.${name}"`, vscode.CompletionItemKind.Text));
+  //         }
+  //       };
+  //        return completionItemArray;
+  //     }
+  //   },
+  //   ':' // trigger
+  // );
+
+	// context.subscriptions.push(configCompletionProvider);
+
+  
