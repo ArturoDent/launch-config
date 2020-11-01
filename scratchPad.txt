@@ -26,4 +26,11 @@
 
 	// context.subscriptions.push(configCompletionProvider);
 
+//  function getEditorInfo() { 
+//     const editor = vscode.window.activeTextEditor;
+//     const resource = editor.document.uri;
+//     console.log(resource);  // fsPath, path, toString()
+//     return resource.fsPath;
+// }
+
   

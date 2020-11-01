@@ -22,7 +22,7 @@ function activate(context) {
 
   const configCompletionProvider = vscode.languages.registerCompletionItemProvider (
 
-    'json',
+    { language: 'json', pattern: '**/keybindings.json' },
     {
       // eslint-disable-next-line no-unused-vars
       provideCompletionItems(document, position, token, context) { 
@@ -69,10 +69,6 @@ function activate(context) {
   });
 }
 
-exports.activate = activate;
-
-function deactivate() {}
-
 function loadLaunchSettings(context) {
 
     // load the launches settings
@@ -91,16 +87,22 @@ function loadLaunchSettings(context) {
 }
 
 async function launchSelectedConfig(name) {
-  let thisWorkspace = vscode.workspace.workspaceFolders[0];
-  await vscode.debug.startDebugging(thisWorkspace, name);
+  // let currentWorkSpace = vscode.workspace.workspaceFolders[0]; 
+
+  let currentWorkSpace = await activeWorkspaceFolder();
+  await vscode.debug.startDebugging(currentWorkSpace, name);
 }
 
-// function getEditorInfo() { 
-//     const editor = vscode.window.activeTextEditor;
-//     const resource = editor.document.uri;
-//     console.log(resource);  // fsPath, path, toString()
-//     return resource.fsPath;
-// }
+async function activeWorkspaceFolder ()  {
+  const folders = await vscode.workspace.workspaceFolders;
+  if (!folders)  vscode.window.showErrorMessage('There is no workspacefolder open.')
+  return await vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor.document.uri);
+};
+
+
+function deactivate() {}
+
+exports.activate = activate;
 
 module.exports = {
 	activate,

@@ -5,11 +5,13 @@
 
 > **BREAKING CHANGE** v0.0.4 is a breaking change - to allow multiple keybindings the form of the setting had to change.
 
+> Current version is v0.1.0
+
 -----------------------------------------------------------------------------------------------
 
 
 ## Extension Settings
-
+ 
 
 ### This extension contributes one setting:</br>
 
@@ -92,6 +94,7 @@ Choose whatever different keybindings you wish.  In your `keybindings.json`, her
 
 - [&nbsp; &nbsp;&nbsp;] - Add better error notifications: no setting, missing key, no match found - may not be possible using `debug.startDebugging()`.
 - [ X ] - Investigate support for more keybindings
+- [ X ] - Add support for multiple workspaceFolders
 - [&nbsp; &nbsp;&nbsp;] - Provide intellisense for `launches` settings, get all `"names"` fron launch.json
 
 -------------------------
@@ -99,6 +102,8 @@ Choose whatever different keybindings you wish.  In your `keybindings.json`, her
 ## Thank you
 
 For the addition of the ability to bind any number of launch configurations to keybindings, I relied heavily on the code from [Jeff Hykin and macro-commander](https://marketplace.visualstudio.com/items?itemName=jeff-hykin.macro-commander).
+
+For determining the workspaceFolder of the current file, I used code from [rioj7's command-variable](https://github.com/rioj7/command-variable/tree/39ff184e2c32e01e8dd429a796568b2ef6617d32).
 
 -------------------------
 
@@ -112,7 +117,9 @@ For the addition of the ability to bind any number of launch configurations to k
 
 &emsp;&emsp;&emsp;&emsp;&emsp;0.0.31  Remove unnecessary `return`'s.
 
-* 0.0.4   **BREAKING CHANGE** Added ability to bind any number of launch configs 
+* 0.0.4   **BREAKING CHANGE** Added ability to bind any number of launch configs
+
+* 0.1.0  Added support for multiple workspaceFolders
  
 
 
