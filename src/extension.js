@@ -1,9 +1,6 @@
 const vscode = require('vscode');
-// const process = require('process');
 
-// let activeContext;
 let disposables = [];
-let launches = {};
 
 
 /**
@@ -17,15 +14,20 @@ function activate(context) {
 
   loadLaunchSettings(context);
 
-  // const keybindingsPath = getEditorInfo();
-  // let docFilter = { language: 'json', scheme: 'vscode-userdata', pattern: keybindingsPath };
+  // let docFilter = { language: 'json', scheme: 'vscode-userdata', pattern: keybindingsPath };  // doesn't work
 
   const configCompletionProvider = vscode.languages.registerCompletionItemProvider (
 
-    { language: 'json', pattern: '**/keybindings.json' },
+    { pattern: '**/keybindings.json' },
+
     {
       // eslint-disable-next-line no-unused-vars
       provideCompletionItems(document, position, token, context) { 
+
+                          // {
+                          //   "key": "alt+f",
+                          //   "command": "launches."
+                          // },
 
         // get all text until the `position` and check if it reads `"launches.`
         const linePrefix = document.lineAt(position).text.substr(0, position.character);
@@ -54,7 +56,8 @@ function activate(context) {
         return completionItemArray;
       }
     },
-    '.' // trigger
+
+    '.'       // trigger intellisense/completion
   );
 
   context.subscriptions.push(configCompletionProvider);
@@ -71,19 +74,24 @@ function activate(context) {
 
 function loadLaunchSettings(context) {
 
-    // load the launches settings
-    launches = vscode.workspace.getConfiguration("launches");
+  // load the 'launches' settings
+                                          // "launches": {
+                                          //    "RunNodeCurrentFile": "Launch File",
+                                          //    "RunCompound1": "Launch file and start chrome"
+                                          // },
 
-    // look at each macro
-    for (const name in launches) {
-        if ((typeof launches[name] !== 'string')) {
-            continue;
-        }
-        // register each one as a command
-        const disposable = vscode.commands.registerCommand(`launches.${name}`, () => launchSelectedConfig(launches[name]));
-        context.subscriptions.push(disposable);
-        disposables.push(disposable);
-    }
+  const launches = vscode.workspace.getConfiguration("launches");
+
+  // look at each 'launches' setting
+  for (const name in launches) {
+      if ((typeof launches[name] !== 'string')) {
+          continue;
+      }
+      // register each one as a command
+      const disposable = vscode.commands.registerCommand(`launches.${name}`, () => launchSelectedConfig(launches[name]));
+      context.subscriptions.push(disposable);
+      disposables.push(disposable);
+  }
 }
 
 async function launchSelectedConfig(name) {

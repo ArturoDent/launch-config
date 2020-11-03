@@ -7,4 +7,6 @@ vsc-extension-quickstart.md
 **/*.map
 **/.eslintrc.json
 
+scrathPad.txt
+
 unused/**

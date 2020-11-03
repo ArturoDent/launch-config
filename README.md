@@ -3,9 +3,10 @@
 
 ### This vscode extension allows you to create settings to launch any number of your `launch.json` configurations or compounds via separate keybindings.</br></br>
 
-> **BREAKING CHANGE** v0.0.4 is a breaking change - to allow multiple keybindings the form of the setting had to change.
+> Current version is v0.2.0
 
-> Current version is v0.1.0
+> **BREAKING CHANGE** v0.0.4 was a breaking change - to allow multiple keybindings the form of the setting had to change.
+
 
 -----------------------------------------------------------------------------------------------
 
@@ -26,6 +27,7 @@ The first part of each entry, like `"RunNodeCurrentFile"`, can be anything you w
     "RunCompound1": "Launch file and start chrome"  
   },
 ```
+
 
 &emsp;&emsp;&emsp;The `name` key and value can be anywhere within its configuration - it does not need to be first.  An example `launch.json` file:
 
@@ -84,6 +86,8 @@ Choose whatever different keybindings you wish.  In your `keybindings.json`, her
   }
   ```
 
+  You will get intellisense in your `keybindings.json` file upon typing the `"launches."` part of the command.  It will show you a list of your available completions from the settings.json, such as `RunNodeCurrentFile` and `RunCompound1`.
+
 -------------------------
 
 ## Known Issues
@@ -96,6 +100,7 @@ Choose whatever different keybindings you wish.  In your `keybindings.json`, her
 - [ X ] - Investigate support for more keybindings
 - [ X ] - Add support for multiple workspaceFolders
 - [&nbsp; &nbsp;&nbsp;] - Provide intellisense for `launches` settings, get all `"names"` fron launch.json
+- [ X ] - Provide intellisense for `launches.` commands in keybindings.json from settings.json settings.
 
 -------------------------
 
@@ -104,6 +109,8 @@ Choose whatever different keybindings you wish.  In your `keybindings.json`, her
 For the addition of the ability to bind any number of launch configurations to keybindings, I relied heavily on the code from [Jeff Hykin and macro-commander](https://marketplace.visualstudio.com/items?itemName=jeff-hykin.macro-commander).
 
 For determining the workspaceFolder of the current file, I used code from [rioj7's command-variable](https://github.com/rioj7/command-variable/tree/39ff184e2c32e01e8dd429a796568b2ef6617d32).
+
+For helping getting Intellisense working in keybindings.json for `launches.` commands, see [rioj7's answer](https://stackoverflow.com/a/64593598/836330).
 
 -------------------------
 
@@ -120,6 +127,8 @@ For determining the workspaceFolder of the current file, I used code from [rioj7
 * 0.0.4   **BREAKING CHANGE** Added ability to bind any number of launch configs
 
 * 0.1.0  Added support for multiple workspaceFolders
+
+* 0.2.0  Added Intellisense in keybindings.json commands
  
 
 

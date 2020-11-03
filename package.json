@@ -1,10 +1,10 @@
 {
 	"name": "launch-config",
 	"displayName": "Launch A Config",
-	"description": "Create shortcuts to launch a specific debug configurations",
+	"description": "Create shortcuts to launch specific debug configurations.",
 	"publisher": "ArturoDent",
-	"version": "0.1.0",
-  "preview": true,
+	"version": "0.2.0",
+  "preview": false,
 	"license": "MIT",
 	"repository": {
 		"type": "git",
