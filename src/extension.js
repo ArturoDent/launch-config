@@ -1,10 +1,11 @@
 const vscode = require('vscode');
+const providers = require('./completionProviders');
 
 let disposables = [];
 
 
 /**
- * @desc - fetch launch configuration user setting
+ * @desc - fetch launch configuration user setting: 'launches'
  * @desc - get matching launch.json configuration
  * @desc - run/launch debug originally triggered with a keybinding
  * 
@@ -13,56 +14,10 @@ let disposables = [];
 function activate(context) {
 
   loadLaunchSettings(context);
+  providers.makeKeybindingsCompletionProvider(context);
+  providers.makeSettingsCompletionProvider(context);
 
-  // let docFilter = { language: 'json', scheme: 'vscode-userdata', pattern: keybindingsPath };  // doesn't work
-
-  const configCompletionProvider = vscode.languages.registerCompletionItemProvider (
-
-    { pattern: '**/keybindings.json' },
-
-    {
-      // eslint-disable-next-line no-unused-vars
-      provideCompletionItems(document, position, token, context) { 
-
-                          // {
-                          //   "key": "alt+f",
-                          //   "command": "launches."
-                          // },
-
-        // get all text until the `position` and check if it reads `"launches.`
-        const linePrefix = document.lineAt(position).text.substr(0, position.character);
-        if (!linePrefix.endsWith('"launches.')) {
-          return undefined;
-        }
-
-        let makeCompletionItem = (key) => { 
-          let item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Text);
-          item.range = new vscode.Range(position, position);
-          return item;
-        }
-
-        const launches = vscode.workspace.getConfiguration("launches");
-        let completionItemArray = [];
-
-        // look at each 'launches' setting
-        for (const key in launches) {
-          if ((typeof launches[key] !== 'string')) {
-              continue;
-          }
-          else {
-            completionItemArray.push(makeCompletionItem(key));
-          }
-        }
-        return completionItemArray;
-      }
-    },
-
-    '.'       // trigger intellisense/completion
-  );
-
-  context.subscriptions.push(configCompletionProvider);
-
-  // whenever settings are changed
+  // whenever settings.json, launch.json or tasks.json are changed
   vscode.workspace.onDidChangeConfiguration(() => {
       for (let disposable of disposables) {
           disposable.dispose()
@@ -94,13 +49,19 @@ function loadLaunchSettings(context) {
   }
 }
 
+/**
+ * @desc - start a debug session of the named launch configuration
+ * @param {string} name - the 'name' key of one launch configuration/compound
+ */
 async function launchSelectedConfig(name) {
-  // let currentWorkSpace = vscode.workspace.workspaceFolders[0]; 
-
   let currentWorkSpace = await activeWorkspaceFolder();
   await vscode.debug.startDebugging(currentWorkSpace, name);
 }
 
+/**
+ * @desc - if multiple WorkSpaceFolders in the WorkSpace
+ * @returns - the WorkSpaceFolder of the currently active file
+ */
 async function activeWorkspaceFolder ()  {
   const folders = await vscode.workspace.workspaceFolders;
   if (!folders)  vscode.window.showErrorMessage('There is no workspacefolder open.')

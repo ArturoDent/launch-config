@@ -3,7 +3,7 @@
 
 ### This vscode extension allows you to create settings to launch any number of your `launch.json` configurations or compounds via separate keybindings.</br></br>
 
-> Current version is v0.2.0
+> Current version is v0.3.0
 
 > **BREAKING CHANGE** v0.0.4 was a breaking change - to allow multiple keybindings the form of the setting had to change.
 
@@ -28,8 +28,9 @@ The first part of each entry, like `"RunNodeCurrentFile"`, can be anything you w
   },
 ```
 
+You will get intellisense in your `settings.json` for the 'name' of all possible launch configurations or compound configurations.
 
-&emsp;&emsp;&emsp;The `name` key and value can be anywhere within its configuration - it does not need to be first.  An example `launch.json` file:
+The `name` key and value can be anywhere within its configuration - it does not need to be first.  An example `launch.json` file:
 
 ```json
 {
@@ -79,6 +80,7 @@ Choose whatever different keybindings you wish.  In your `keybindings.json`, her
   {
     "key": "alt+f",
     "command": "launches.RunNodeCurrentFile"
+    // "when": "editorTextFocus && editorLangId == javascript"
   },
   {
     "key": "alt+g",
@@ -96,11 +98,12 @@ Choose whatever different keybindings you wish.  In your `keybindings.json`, her
 
 ## TODO
 
-- [&nbsp; &nbsp;&nbsp;] - Add better error notifications: no setting, missing key, no match found - may not be possible using `debug.startDebugging()`.
-- [ X ] - Investigate support for more keybindings
-- [ X ] - Add support for multiple workspaceFolders
-- [&nbsp; &nbsp;&nbsp;] - Provide intellisense for `launches` settings, get all `"names"` fron launch.json
-- [ X ] - Provide intellisense for `launches.` commands in keybindings.json from settings.json settings.
+- [ X ] - Add better error notifications: `debug.startDebugging()` provides this adequately.
+- [ X ] - Investigate support for more keybindings.
+- [ X ] - Add support for multiple workspaceFolders.
+- [ X ] - Provide intellisense for settings.json, with all `"names"` fron launch.json
+- [ X ] - Provide intellisense for `launches.` commands in keybindings.json from settings.json keys.
+- [&emsp;] - Provide intellisense for keybindings.json command name "launches".
 
 -------------------------
 
@@ -129,6 +132,8 @@ For helping getting Intellisense working in keybindings.json for `launches.` com
 * 0.1.0  Added support for multiple workspaceFolders
 
 * 0.2.0  Added Intellisense in keybindings.json commands
+
+* 0.3.0  Added Intellisense in settings.json for launch configuration/compound 'name'
  
 
 
