@@ -1,6 +1,8 @@
 const vscode = require('vscode');
 const providers = require('./completionProviders');
 
+// const bindings = require('./testKeybindingsRetrieval');
+
 let disposables = [];
 
 
@@ -13,6 +15,8 @@ let disposables = [];
  */
 function activate(context) {
 
+  // bindings.get();  return;
+
   loadLaunchSettings(context);
   providers.makeKeybindingsCompletionProvider(context);
   providers.makeSettingsCompletionProvider(context);
@@ -23,30 +27,55 @@ function activate(context) {
           disposable.dispose()
       }
       // reload them
-      loadLaunchSettings(context);
+    loadLaunchSettings(context);
   });
+
+  vscode.workspace.onDidChangeWorkspaceFolders(() => {
+    loadLaunchSettings(context);
+  })
 }
 
 function loadLaunchSettings(context) {
 
   // load the 'launches' settings
-                                          // "launches": {
-                                          //    "RunNodeCurrentFile": "Launch File",
-                                          //    "RunCompound1": "Launch file and start chrome"
-                                          // },
+                                  // "launches": {
+                                  //    "RunNodeCurrentFile": "Launch File (workspaceFolderName)",
+                                  //    "RunCompound1": "Launch file and start chrome"
+                                  // },
 
   const launches = vscode.workspace.getConfiguration("launches");
 
   // look at each 'launches' setting
   for (const name in launches) {
-      if ((typeof launches[name] !== 'string')) {
-          continue;
-      }
-      // register each one as a command
-      const disposable = vscode.commands.registerCommand(`launches.${name}`, () => launchSelectedConfig(launches[name]));
-      context.subscriptions.push(disposable);
-      disposables.push(disposable);
+    // if (typeof launches[name] !== 'string') {
+    if ((typeof launches[name] !== 'string') && (typeof launches[name] !== 'object')) {
+        continue;
+    }
+
+    let disposable;
+
+    // register each one as a command
+    // launches[name] === "Launch File (Project A Folder)" or ["Launch File (BuildSACC)"]
+    // `launches.${name}` === "launches.RunNodeCurrentFile" or "launches.RunAsArray"
+
+    if (typeof launches[name] === 'object') {
+      disposable = vscode.commands.registerCommand(`launches.${ name }`, () => launchArrayOfConfigs(launches[name]));
+    }
+    else {
+      disposable = vscode.commands.registerCommand(`launches.${ name }`, () => launchSelectedConfig(launches[name]));
+    }
+    context.subscriptions.push(disposable);
+    disposables.push(disposable);
   }
+}
+
+/**
+ * 
+ * @param {object} nameArray - an array of config names to run simultaneously
+ */
+async function launchArrayOfConfigs(nameArray) {  
+  // something more synchronous than forEach ***
+  nameArray.forEach(async name => await launchSelectedConfig(name));
 }
 
 /**
@@ -54,8 +83,23 @@ function loadLaunchSettings(context) {
  * @param {string} name - the 'name' key of one launch configuration/compound
  */
 async function launchSelectedConfig(name) {
-  let currentWorkSpace = await activeWorkspaceFolder();
-  await vscode.debug.startDebugging(currentWorkSpace, name);
+
+  // "Launch Build.js (Project A Folder)"    // get the workspaceFolder.uri of (<someFolderName>)
+  // ^(.+)\s\((.*)\)$|^(.*)$  // with or without a workspaceFolderName at the end
+
+  const regex = /^(.+)\s\((.*)\)$|^(.*)$/m;
+      // eslint-disable-next-line no-unused-vars
+  let [ fullString, configName, folderName, configNameNoFolder ] = name.match(regex);
+  
+  let ConfigWorkSpaceFolder;
+
+  // check if folderName is empty, if so use the  workSpaceFolder of the active editor
+  if (!folderName) ConfigWorkSpaceFolder = await activeWorkspaceFolder();
+  else ConfigWorkSpaceFolder = vscode.workspace.workspaceFolders.find(ws => ws.name === folderName);
+
+  configName = configName ? configName : configNameNoFolder;
+
+  await vscode.debug.startDebugging(ConfigWorkSpaceFolder, configName);
 }
 
 /**

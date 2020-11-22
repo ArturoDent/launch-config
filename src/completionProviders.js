@@ -19,7 +19,7 @@ exports.makeKeybindingsCompletionProvider = function(context) {
                             //   "command": "launches.<completion here>"
                             // },
 
-          // get all text until the `position` and check if it reads `"launches.`
+          // get all text until the cursor `position` and check if it reads `"launches.`
           const linePrefix = document.lineAt(position).text.substr(0, position.character);
           if (!linePrefix.endsWith('"launches.')) {
             return undefined;
@@ -30,7 +30,12 @@ exports.makeKeybindingsCompletionProvider = function(context) {
 
           // look at each 'launches' setting
           for (const item in launches) {
-            if ((typeof launches[item] !== 'string')) {
+
+            // "RunAsArray": ["Launch File (BuildSACC)", "Launch File (TestMultiRoot)"],
+            if (typeof launches[item] === 'object') {
+              completionItemArray.push(makeCompletionItem(item, position));
+            }
+            else if ((typeof launches[item] !== 'string')) {
                 continue;
             }
             else {
@@ -61,26 +66,40 @@ exports.makeSettingsCompletionProvider = function(context) {
       provideCompletionItems(document, position, token, context) {
 
                         // "launches": {
-                        //   "RunNodeCurrentFile": "Launch File",
-                        //   "RunCompound1": "Launch file and start chrome"
+                        //   "RunNodeCurrentFile": "Launch File (workspaceFolderName1)",
+                        //   "RunCompound1": "Launch file and start chrome (workspaceFolderName2)"
                         //   "someName": "<completion here>"
                         // },
 
         // get all text until the current `position` and check if it reads `:\s*"$` at the end
         const linePrefix = document.lineAt(position).text.substr(0, position.character);
-        const regex = /:\s*"$/g;
+        // const regex = /:\s*"$/g;
+        const regex = /[:,]\s*("|\[")$/g;
         if (linePrefix.search(regex) === -1) {
           return undefined;
         }
 
-        const launchConfigs = vscode.workspace.getConfiguration("launch");
-        let nameArray = launchConfigs.get('configurations');
-        nameArray = nameArray.concat(launchConfigs.get('compounds'));
+        const workSpaceFolders = vscode.workspace.workspaceFolders;
+        let launchConfigs;
+        let nameArray = [];
+
+        workSpaceFolders.forEach((workSpace) => {
+
+          launchConfigs = vscode.workspace.getConfiguration('launch', workSpace.uri);
+          let configArray = launchConfigs.get('configurations');
+          configArray = configArray.concat(launchConfigs.get('compounds'));
+
+          configArray.forEach(config => {
+            if (typeof config.name === 'string') {
+              nameArray.push(`${ config.name } (${ workSpace.name })`);
+            }
+          });
+        });
 
         let completionItemArray = [];
 
         for (const item in nameArray) {
-          if ((typeof nameArray[item].name !== 'string')) {
+          if ((typeof nameArray[item] !== 'string')) {
               continue;
           }
           else {
@@ -88,7 +107,7 @@ exports.makeSettingsCompletionProvider = function(context) {
                         //   {
                         //     "name": "Launch File",
                         
-            completionItemArray.push(makeCompletionItem(nameArray[item].name, position));
+            completionItemArray.push(makeCompletionItem(nameArray[item], position));
           }
         }
         return completionItemArray;
@@ -111,5 +130,11 @@ exports.makeSettingsCompletionProvider = function(context) {
 function makeCompletionItem(key, position)  {
   let item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Text);
   item.range = new vscode.Range(position, position);
+
+  const regex = /^(.+)\s\((.*)\)$|^(.*)$/m;
+      // eslint-disable-next-line no-unused-vars
+  let [fullString, configName, folderName] = key.match(regex);
+  
+  item.sortText = folderName;
   return item;
 }
