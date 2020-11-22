@@ -163,11 +163,13 @@ Choose whatever different keybindings you wish.  Here are example keybindings (i
 
 There is an unusual bug in vscode that pertains only to multi-root workspaces where you have at least two `launch.json` files with identically-named configurations that are used in a compound configuration.  So if you have this in *projectA's* `launch.json`:
 
-```json
+```jsonc
+
 "compounds": [
       {
           "name": "Launch file and start chrome",
-          "configurations": ["Launch File", "Launch Chrome against localhost" ],  // what if no "Launch File" config in file?
+                                            // what if no "Launch File" config in file?
+          "configurations": ["Launch File", "Launch Chrome against localhost" ],
           "stopAll": true 
       },
     ],
