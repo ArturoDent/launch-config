@@ -1,7 +1,7 @@
 # Launch A Config
 
 
- This vscode extension allows you to create settings to launch any number of your `launch.json` configurations or compounds via separate keybindings.  These launch configs can be in any root folder in a multi-root workspace.  And a launch config from one root folder can be triggered while in a file from a different root folder.  And you can create arrays of launch configs to run with a singel keybinding.</br></br>
+ This vscode extension allows you to create settings to launch any number of your `launch.json` configurations or compounds via separate keybindings.  These launch configs can be in any root folder in a multi-root workspace.  And a launch config from one root folder can be triggered while in a file from a different root folder.  And you can create arrays of launch configs to run with a single keybinding.</br></br>
 
 > The named configurations are looked up in `.vscode/launch.json` found in the given folder. Before debugging starts, all unsaved files are saved and the launch configurations are brought up-to-date. Folder specific variables used in the configuration (e.g. `${workspaceFolder}`) are resolved against the given folder. From [startDebugging()](https://code.visualstudio.com/api/references/vscode-api#debug)  documentation.  
 
@@ -85,7 +85,8 @@ The first part of each entry, like `"RunNodeCurrentFile"`, can be anything you w
 
 You will get intellisense in your `settings.json` for the 'name' of all possible launch configurations or compound configurations.  This intellisense will include all configurations and root folder names if you are in a multi-root workspace.  That folder name is used to resolve which `launch.js` to look in for the corresponding configuration (especially important where the same config `name` - like `Launch File` - is used in multiple `launch.json` files).
 
-<img alt="Intellisense in settings.json" src="https://github.com/ArturoDent/launch-config/tree/master/images/launchesSettingsIntellisense.gif" width="1000" height="300" />
+
+![Intellisense in settings.json](images/launchesSettingsIntellisense.gif)
 
 </br>
 </br>[The launch config `name`s can be anything - I just happened to use "Launch" at the beginning of all these demo names, that is not necessary.]</br></br>
@@ -133,7 +134,8 @@ The `name` key and value can be anywhere within its configuration - it does not 
 
 This extension generates commands from settings created by the user. These generated commands will appear in `Keyboard Shortcuts` and keybindings can be assigned there or manually, with intellisense, in `keybindings.json`.  In this example there are four settings from which commands have been generated and two of those have had keybindings associated with them previously.
 
-<img alt="Keyboard Shortcuts showing generated commands" src="https://github.com/ArturoDent/launch-config/tree/master/images/shortcuts.gif" width="1000" height="250" />
+
+![Keyboard Shortcuts showing generated commands](images/shortcuts.gif)
 
 
 ### Keybindings:
@@ -154,7 +156,8 @@ Choose whatever different keybindings you wish.  Here are example keybindings (i
 
   You will get intellisense in your `keybindings.json` file upon typing the `"launches."` part of the command.  It will show you a list of your available completions from your `settings.json`, such as `RunAsArray` and `RunCompound`.
 
-<img alt="Intellisense for keybindings.json" src="https://github.com/ArturoDent/launch-config/tree/master/images/keybindingsIntellisense.gif" width="500" height="150" />
+
+![Intellisense for keybindings.json](images/keybindingsIntellisense.gif)
 
 
 -------------------------
