@@ -23,9 +23,10 @@ So be careful, if you use this extension to start a launch configuration from a 
     "RunNodeCurrentFileB": "Launch File (Project B Folder)"
   }
 ``` 
+ In keybindings.json or added from the Keyboard Shortcuts UI: 
 ```json
   {
-    "key": "alt+g",                      // in keybindings.json or added from the Keyboard Shortcuts UI
+    "key": "alt+g",                     
     "command": "launches.RunNodeCurrentFile"
   }
 ```
@@ -37,27 +38,27 @@ So be careful, if you use this extension to start a launch configuration from a 
     "RunNodeBuildFileB": "Launch BFile (Project B Folder)"
   }
 ``` 
-
+Trigger from a Project A or Project B editor:  
 ```json
   {
-    "key": "alt+h",                       // trigger from a Project A or Project B editor
+    "key": "alt+h",                       
     "command": "launches.RunNodeBuildFileA"
   },
   {
-    "key": "alt+i",                       // trigger from a Project A or Project B editor
+    "key": "alt+i",                       
     "command": "launches.RunNodeBuildFileB"
   }
 ```
 * Run an array of launch configurations from any `launch.json` in the workspace, in `settings.json`:
 ```json
   "launches": {
-                                          // an array of any size
+
     "RunLaunchArray": ["Launch File (Project A)", "Launch File (Project B)"]
   }
 ```
 ```json
   {
-    "key": "alt+j",                       // in keybindings.json, any keybinding you wish
+    "key": "alt+j",
     "command": "launches.RunLaunchArray"
   }
   ```
@@ -74,7 +75,7 @@ So be careful, if you use this extension to start a launch configuration from a 
 
 The first part of each entry, like `"RunNodeCurrentFile"`, can be anything you want (without spaces) - you will use it in the keybinding.  The second part, like `"Launch File"`, is the name of the configuration you would like to run. In `settings.json`:
 
-```json
+```jsonc
   "launches": {
 
     "RunNodeCurrentFile": "Launch File (<some root folder name>)",  // the folder name will be provided for you
@@ -84,7 +85,7 @@ The first part of each entry, like `"RunNodeCurrentFile"`, can be anything you w
 
 You will get intellisense in your `settings.json` for the 'name' of all possible launch configurations or compound configurations.  This intellisense will include all configurations and root folder names if you are in a multi-root workspace.  That folder name is used to resolve which `launch.js` to look in for the corresponding configuration (especially important where the same config `name` - like `Launch File` - is used in multiple `launch.json` files).
 
-<img alt="Intellisense in settings.json" src="images\launchesSettingsIntellisense.gif" width="1000" height="300" />
+<img alt="Intellisense in settings.json" src="https://github.com/ArturoDent/launch-config/tree/master/images/launchesSettingsIntellisense.gif" width="1000" height="300" />
 
 </br>
 </br>[The launch config `name`s can be anything - I just happened to use "Launch" at the beginning of all these demo names, that is not necessary.]</br></br>
@@ -132,14 +133,14 @@ The `name` key and value can be anywhere within its configuration - it does not 
 
 This extension generates commands from settings created by the user. These generated commands will appear in `Keyboard Shortcuts` and keybindings can be assigned there or manually, with intellisense, in `keybindings.json`.  In this example there are four settings from which commands have been generated and two of those have had keybindings associated with them previously.
 
-<img alt="Keyboard Shortcuts showing generated commands" src="images\shortcuts.gif" width="1000" height="250" />
+<img alt="Keyboard Shortcuts showing generated commands" src="https://github.com/ArturoDent/launch-config/tree/master/images/shortcuts.gif" width="1000" height="250" />
 
 
 ### Keybindings:
 
 Choose whatever different keybindings you wish.  Here are example keybindings (in `keybindings.json`):
 
-```json
+```jsonc
   {
     "key": "alt+f",
     "command": "launches.RunAsArray"
@@ -153,7 +154,7 @@ Choose whatever different keybindings you wish.  Here are example keybindings (i
 
   You will get intellisense in your `keybindings.json` file upon typing the `"launches."` part of the command.  It will show you a list of your available completions from your `settings.json`, such as `RunAsArray` and `RunCompound`.
 
-<img alt="Intellisense for keybindings.json" src="images\keybindingsIntellisense.gif" width="500" height="150" />
+<img alt="Intellisense for keybindings.json" src="https://github.com/ArturoDent/launch-config/tree/master/images/keybindingsIntellisense.gif" width="500" height="150" />
 
 
 -------------------------
