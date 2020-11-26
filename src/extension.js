@@ -21,12 +21,36 @@ function activate(context) {
   providers.makeKeybindingsCompletionProvider(context);
   providers.makeSettingsCompletionProvider(context);
 
+  let disposable = vscode.commands.registerCommand('launches.showAllLaunchConfigs', async function () {
+
+    const workSpaceFolders = vscode.workspace.workspaceFolders;
+    let nameArray = providers.getLaunchConfigNameArray(workSpaceFolders);
+
+    // add space to the nameArray just for the QuickPick
+    // unfortunately the QuickPick panel is not rendered in a monospaced font so this has to be just a guess
+    nameArray = nameArray.map(name => name.replace('     ','                    ' ));
+
+    return vscode.window.showQuickPick(nameArray, {
+      canPickMany: true,
+      placeHolder: "Select launch configuration(s) to run"
+    }).then(items => {
+      if (items) {
+        if (Array.isArray(items)) {
+          launchArrayOfConfigs(items);  // if multiple selections: array
+        }
+        else launchSelectedConfig(items);  // if only one config selected = string
+      }
+    });
+  });
+  context.subscriptions.push(disposable);
+  disposables.push(disposable);
+
   // whenever settings.json, launch.json or tasks.json are changed
   vscode.workspace.onDidChangeConfiguration(() => {
       for (let disposable of disposables) {
           disposable.dispose()
       }
-      // reload them
+      // reload
     loadLaunchSettings(context);
   });
 
@@ -71,7 +95,7 @@ function loadLaunchSettings(context) {
 
 /**
  * 
- * @param {object} nameArray - an array of config names to run simultaneously
+ * @param {Array} nameArray - an array of config names to run simultaneously
  */
 async function launchArrayOfConfigs(nameArray) {  
   // something more synchronous than forEach ***
@@ -87,7 +111,7 @@ async function launchSelectedConfig(name) {
   // "Launch Build.js (Project A Folder)"    // get the workspaceFolder.uri of (<someFolderName>)
   // ^(.+)\s\((.*)\)$|^(.*)$  // with or without a workspaceFolderName at the end
 
-  const regex = /^(.+)\s\((.*)\)$|^(.*)$/m;
+  const regex = /^(.+?)\s+\(([^)]*)\)$|^(.*)$/m;
       // eslint-disable-next-line no-unused-vars
   let [ fullString, configName, folderName, configNameNoFolder ] = name.match(regex);
   

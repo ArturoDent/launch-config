@@ -58,7 +58,7 @@ exports.makeKeybindingsCompletionProvider = function(context) {
  * @param {object} context
  * @returns a CompletionProvider 
  */
-exports.makeSettingsCompletionProvider = function(context) {
+exports.makeSettingsCompletionProvider = function(context) { 
   const settingsCompletionProvider = vscode.languages.registerCompletionItemProvider (
     { pattern: '**/settings.json' },
     {
@@ -68,34 +68,22 @@ exports.makeSettingsCompletionProvider = function(context) {
                         // "launches": {
                         //   "RunNodeCurrentFile": "Launch File (workspaceFolderName1)",
                         //   "RunCompound1": "Launch file and start chrome (workspaceFolderName2)"
-                        //   "someName": "<completion here>"
+                        //   "someName": ["<completion here>"]
                         // },
 
         // get all text until the current `position` and check if it reads `:\s*"$` at the end
         const linePrefix = document.lineAt(position).text.substr(0, position.character);
-        // const regex = /:\s*"$/g;
+
+        // works in arrays as well
         const regex = /[:,]\s*("|\[")$/g;
         if (linePrefix.search(regex) === -1) {
           return undefined;
         }
 
         const workSpaceFolders = vscode.workspace.workspaceFolders;
-        let launchConfigs;
-        let nameArray = [];
+        let nameArray = getLaunchConfigNameArray(workSpaceFolders);
 
-        workSpaceFolders.forEach((workSpace) => {
-
-          launchConfigs = vscode.workspace.getConfiguration('launch', workSpace.uri);
-          let configArray = launchConfigs.get('configurations');
-          configArray = configArray.concat(launchConfigs.get('compounds'));
-
-          configArray.forEach(config => {
-            if (typeof config.name === 'string') {
-              nameArray.push(`${ config.name } (${ workSpace.name })`);
-            }
-          });
-        });
-
+        if (nameArray.length === 0) return [];  // return an empty array
         let completionItemArray = [];
 
         for (const item in nameArray) {
@@ -103,10 +91,6 @@ exports.makeSettingsCompletionProvider = function(context) {
               continue;
           }
           else {
-                        // "configurations": [
-                        //   {
-                        //     "name": "Launch File",
-                        
             completionItemArray.push(makeCompletionItem(nameArray[item], position));
           }
         }
@@ -119,6 +103,45 @@ exports.makeSettingsCompletionProvider = function(context) {
   context.subscriptions.push(settingsCompletionProvider);
 }
 
+/**
+ * @desc - build an array of all config/compound launch names
+ * 
+ * @param {object} workSpaceFolders - an array
+ * @returns {object} nameArray
+ */
+function getLaunchConfigNameArray (workSpaceFolders) {
+
+  let launchConfigs;
+  let nameArray = [];
+
+  // configurations and compounds in '*.code-workspace' file of multi-root workspace
+  // let configArray = vscode.workspace.getConfiguration('launch').compounds;
+  // configArray = configArray.concat(vscode.workspace.getConfiguration('launch').configurations);
+
+  // configArray.forEach(config => {
+  //   if (typeof config.name === 'string') {
+  //     nameArray.push(`${ config.name }`);
+  //   }
+  // });
+  
+  workSpaceFolders.forEach((workSpace) => {
+
+    launchConfigs = vscode.workspace.getConfiguration('launch', workSpace.uri);
+    let configArray = launchConfigs.get('configurations');
+    configArray = configArray.concat(launchConfigs.get('compounds'));
+
+    configArray.forEach(config => {
+      if (typeof config.name === 'string') {
+        // to move the folder name out to the right so they align better, easier to read
+        let padding = (32 - config.name.length > 0) ? 32 - config.name.length : 1;
+        let fill = ' '.padEnd(padding);
+        nameArray.push(`${ config.name }${ fill }(${ workSpace.name })`);
+      }
+    });
+  });
+  return nameArray;
+}
+
 
 /**
  * @desc - from a string input make a CompletionItemKind.Text
@@ -127,7 +150,8 @@ exports.makeSettingsCompletionProvider = function(context) {
  * @param {object} position
  * @returns - CompletionItemKind.Text
  */
-function makeCompletionItem(key, position)  {
+function makeCompletionItem(key, position) {
+  
   let item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Text);
   item.range = new vscode.Range(position, position);
 
@@ -136,5 +160,12 @@ function makeCompletionItem(key, position)  {
   let [fullString, configName, folderName] = key.match(regex);
   
   item.sortText = folderName;
+
+  // remove spaces added to align folders in completionProvider
+  let stripSpaces = /(\s{2,})(\([^)]+\))$/g;
+  item.insertText = key.replace(stripSpaces, ' $2');
+  
   return item;
 }
+
+exports.getLaunchConfigNameArray = getLaunchConfigNameArray;

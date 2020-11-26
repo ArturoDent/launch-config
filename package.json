@@ -1,9 +1,9 @@
 {
 	"name": "launch-config",
-	"displayName": "Launch A Config",
+	"displayName": "Launch Configs",
 	"description": "Create shortcuts to launch specific debug configurations.",
 	"publisher": "ArturoDent",
-	"version": "0.4.2",
+	"version": "0.5.0",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -21,11 +21,17 @@
 		"keybinding"
 	],
 	"activationEvents": [
-		"*"
+		"*",
+		"onCommand:launches.showAllLaunchConfigs"
 	],
 	"main": "./src/extension.js",
+
 	"contributes": {
 
+    "commands": {
+      "command": "launches.showAllLaunchConfigs",
+      "title":   "Launch Configs: Show all launch configurations"
+    },
     "configuration": {
       "type": "object",
       "title": "Launches Debug Configuration",
