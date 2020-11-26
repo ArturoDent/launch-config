@@ -201,12 +201,12 @@ Of course, you shouldn't have a compound config that lists a configuration that 
 
 ## TODO
 
-[ &#10004; ] - Add support for multiple workspaceFolders, finished in v0.4.  
-[ &#10004; ] - Explore running multiple debug sessions from one keybinding [v0.4].  
-[ &#10004; ] - Provide intellisense for settings.json, with all `"names"` fron launch.json  [v0.3].  
-[ &#10004; ] - Provide intellisense for `launches.` commands in keybindings.json from settings.json keys  [v0.2].  
+[ X ] - Add support for multiple workspaceFolders, finished in v0.4.  
+[ X ] - Explore running multiple debug sessions from one keybinding [v0.4].  
+[ X ] - Provide intellisense for settings.json, with all `"names"` fron launch.json  [v0.3].  
+[ X ] - Provide intellisense for `launches.` commands in keybindings.json from settings.json keys  [v0.2].  
 [&emsp; ] - Explore generating a command directly from keybindings.  
-[ &#10004; ] - Add command and QuickPanel launch config and selections [v0.5].  
+[ X ] - Add command and QuickPanel launch config and selections [v0.5].  
 [&emsp; ] - Explore retrieval of launch configs from `.code-workspace` files in a multi-root workspace.  
 
 
