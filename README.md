@@ -89,7 +89,7 @@ You will get intellisense in your `settings.json` for the 'name' of all possible
 
 <!-- ![Intellisense in settings.json](images/launchesSettingsIntellisense.gif) -->
 
-<img src="images\launchesSettingsIntellisense.gif" width="1000" height="300" />
+<img src="https://github.com/ArturoDent/launch-config/blob/master/images/launchesSettingsIntellisense.gif" width="1000" height="300" />
 
 </br>
 </br>[The launch config `name`s can be anything - I just happened to use "Launch" at the beginning of all these demo names, that is not necessary.]</br></br>
@@ -138,13 +138,14 @@ The `name` key and value can be anywhere within its configuration - it does not 
 This extension generates commands from settings created by the user. These generated commands will appear in `Keyboard Shortcuts` and keybindings can be assigned there or manually, with intellisense, in `keybindings.json`.  In this example there are four settings from which commands have been generated and two of those have had keybindings associated with them previously.
 
 
-<!-- ![Keyboard Shortcuts showing generated commands](images/shortcuts.gif) -->
-<img src="images\shortcuts.gif" width="1000" height="200" />
+<!-- ![Keyboard Shortcuts showing generated commands](https://github.com/ArturoDent/launch-config/blob/master/images/shortcuts.gif =1000x200) -->
+<img src="https://github.com/ArturoDent/launch-config/blob/master/images/shortcuts.gif" width="1000" height="200" />
 
 This extension also provides one built-in command `launches.showAllLaunchConfigs` which opens a QuickPick panel of all available launch configurations.  From this panel you can select and run one or more configurations.  Note: there is no guarantee that the configs will be run in the order you select them as just an alphabetical list of selections is returned by vscode.
 
 <!-- ![Launch configurations in a QuickPick panel](images/LaunchQuickPick.gif) -->
-<img src="images\LaunchQuickPick.gif" width="1000" height="400" />
+<img src="https://github.com/ArturoDent/launch-config/blob/master/images/LaunchQuickPick.gif" width="1000" height="400" />
+<!-- https://github.com/ArturoDent/launch-config/blob/master/images/LaunchQuickPick.gif -->
 
 </br></br>
 ### Keybindings:
@@ -172,7 +173,7 @@ Choose whatever different keybindings you wish.  Here are example keybindings (i
 
 <!-- ![Intellisense for keybindings.json](images/keybindingsIntellisense.gif)
  -->
-<img src="images\keybindingsIntellisense.gif" width="600" height="200" />
+<img src="https://github.com/ArturoDent/launch-config/blob/master/images/keybindingsIntellisense.gif" width="600" height="200" />
 
 
 -------------------------
