@@ -28,7 +28,22 @@ function activate(context) {
 
     // add space to the nameArray just for the QuickPick
     // unfortunately the QuickPick panel is not rendered in a monospaced font so this has to be just a guess
-    nameArray = nameArray.map(name => name.replace('     ','                    ' ));
+    // nameArray = nameArray.map(name => name.replace('     ','                    ' ));
+
+    // let padding = (32 - config.name.length > 0) ? 32 - config.name.length : 1;
+
+    // let fill = ' '.padEnd(padding);
+    // nameArray.push(`${ config.name }${ fill }(${ workSpace.name })`);
+
+    const regex = /^(.+?)\s*(\(.*\))$|^(.*)$/m;  
+
+    nameArray = nameArray.map(name => {
+
+          // eslint-disable-next-line no-unused-vars
+      let [fullString, configName, folderName] = name.match(regex);
+      let padding = (80 - configName.length > 0) ? (80 - configName.length)/1.4 : 1;
+      return configName.padEnd(padding, ' ') + folderName;
+    });
 
     return vscode.window.showQuickPick(nameArray, {
       canPickMany: true,

@@ -87,8 +87,9 @@ The first part of each entry, like `"RunNodeCurrentFile"`, can be anything you w
 You will get intellisense in your `settings.json` for the 'name' of all possible launch configurations or compound configurations.  This intellisense will include all configurations and root folder names if you are in a multi-root workspace.  That folder name is used to resolve which `launch.js` to look in for the corresponding configuration (especially important where the same config `name` - like `Launch File` - is used in multiple `launch.json` files).
 
 
-<!-- <img src="../images/launchesSettingsIntellisense.gif" width="1000" height="300" /> -->
-![Settings.json Intellisense](images/launchesSettingsIntellisense.gif)
+<!-- ![Settings.json Intellisense](images/launchesSettingsIntellisense.gif) -->
+<img src="https://github.com/ArturoDent/launch-config/blob/master/images/launchesSettingsIntellisense.gif?raw=true" width="900" height="250" alt="Intellisense for Launch Settings demo"/>
+
 
 </br>
 </br>[The launch config `name`s can be anything - I just happened to use "Launch" at the beginning of all these demo names, that is not necessary.]</br></br>
@@ -137,13 +138,13 @@ The `name` key and value can be anywhere within its configuration - it does not 
 This extension generates commands from settings created by the user. These generated commands will appear in `Keyboard Shortcuts` and keybindings can be assigned there or manually, with intellisense, in `keybindings.json`.  In this example there are four settings from which commands have been generated and two of those have had keybindings associated with them previously.
 
 
-<!-- <img src="../images/shortcuts.gif" width="1000" height="200" /> -->
-![Keybindings shortcuts](images/shortcuts.gif)
+<!-- ![Keybindings shortcuts](images/shortcuts.gif) -->
+<img src="https://github.com/ArturoDent/launch-config/blob/master/images/shortcuts.gif?raw=true" width="1000" height="250" alt="Keybindings shortcuts demo"/>
 
 This extension also provides one built-in command `launches.showAllLaunchConfigs` which opens a QuickPick panel of all available launch configurations.  From this panel you can select and run one or more configurations.  Note: there is no guarantee that the configs will be run in the order you select them as just an alphabetical list of selections is returned by vscode.
 
-<!-- <img src="../images/LaunchQuickPick.gif" width="1000" height="400" /> -->
-![QuickPick panel](images/LaunchQuickPick.gif)
+<!-- ![QuickPick panel](images/LaunchQuickPick.gif) -->
+<img src="https://github.com/ArturoDent/launch-config/blob/master/images/LaunchQuickPick.gif?raw=true" width="1000" height="400" alt="QuickPick demo"/>
 
 </br></br>
 ### Keybindings:
@@ -169,8 +170,9 @@ Choose whatever different keybindings you wish.  Here are example keybindings (i
   You will get intellisense in your `keybindings.json` file for the `launches.showAllLaunchConfigs` command and upon typing the `"launches."` part of the command.  Then you will see a list of your available completions from your `settings.json`, such as `RunAsArray` and `RunCompound`.
 
 
-<!-- <img src="../images/keybindingsIntellisense.gif" width="600" height="200" /> -->
-![Intellisense for Keybindings.json](images/keybindingsIntellisense.gif)
+<!-- ![Intellisense for Keybindings.json](images/keybindingsIntellisense.gif) -->
+<img src="https://github.com/ArturoDent/launch-config/blob/master/images/keybindingsIntellisense.gif?raw=true" width="600" height="200" alt="Intellisense for Keybindings demo"/>
+
 
 
 -------------------------
