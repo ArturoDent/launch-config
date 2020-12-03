@@ -212,8 +212,6 @@ Of course, you shouldn't have a compound config that lists a configuration that 
 [&emsp; ] - Explore retrieval of launch configs from `.code-workspace` files in a multi-root workspace.  
 
 
-
-
 -------------------------
 
 ## Thank you
@@ -234,8 +232,6 @@ For helping getting Intellisense working in keybindings.json for `launches.` com
 
 * 0.0.3 &emsp;  Switched to `vscode.debug.startDebugging()` - much simpler
 
-&emsp;&emsp;&emsp;&emsp; * 0.0.31  Remove unnecessary `return`'s.
-
 * 0.0.4  &emsp; **BREAKING CHANGE** Added ability to bind any number of launch configs
 
 * 0.1.0 &emsp;  Added preliminary support for multiple workspaceFolders
@@ -249,6 +245,8 @@ For helping getting Intellisense working in keybindings.json for `launches.` com
 &emsp;&emsp; &emsp; Intellisense for array commands like `"RunAsArray": ["Launch Build.js (BuildSACC)", "Launch Build.js2 (TestMultiRoot)"]`
 
 * 0.5.0 &emsp;  Added command to show a QuickPick panel of all available launch configs, and select therefrom
+
+* 0.6.0 &emsp; Fixed so intellisense is only within the 'launches' setting, not triggered in other unrelated settings 
 
 
  

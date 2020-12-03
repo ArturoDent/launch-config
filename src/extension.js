@@ -15,7 +15,10 @@ let disposables = [];
  */
 function activate(context) {
 
-  // bindings.get();  return;
+      // {
+      //   command: "launches.showAllLaunchConfigs",
+      //   title: "Launch Configs: Show all launch configurations",
+      // }
 
   loadLaunchSettings(context);
   providers.makeKeybindingsCompletionProvider(context);
@@ -28,12 +31,6 @@ function activate(context) {
 
     // add space to the nameArray just for the QuickPick
     // unfortunately the QuickPick panel is not rendered in a monospaced font so this has to be just a guess
-    // nameArray = nameArray.map(name => name.replace('     ','                    ' ));
-
-    // let padding = (32 - config.name.length > 0) ? 32 - config.name.length : 1;
-
-    // let fill = ' '.padEnd(padding);
-    // nameArray.push(`${ config.name }${ fill }(${ workSpace.name })`);
 
     const regex = /^(.+?)\s*(\(.*\))$|^(.*)$/m;  
 
@@ -74,6 +71,11 @@ function activate(context) {
   })
 }
 
+/**
+ * @description - get 'launches' seting and registerCommands for them
+ * @param {Object} context - ExtensionContext
+ * @returns - nothing
+ */
 function loadLaunchSettings(context) {
 
   // load the 'launches' settings
@@ -86,8 +88,7 @@ function loadLaunchSettings(context) {
 
   // look at each 'launches' setting
   for (const name in launches) {
-    // if (typeof launches[name] !== 'string') {
-    if ((typeof launches[name] !== 'string') && (typeof launches[name] !== 'object')) {
+    if ((typeof launches[name] !== 'string') && (!Array.isArray(launches[name]))) {
         continue;
     }
 
@@ -97,7 +98,7 @@ function loadLaunchSettings(context) {
     // launches[name] === "Launch File (Project A Folder)" or ["Launch File (BuildSACC)"]
     // `launches.${name}` === "launches.RunNodeCurrentFile" or "launches.RunAsArray"
 
-    if (typeof launches[name] === 'object') {
+    if (Array.isArray(launches[name])) {
       disposable = vscode.commands.registerCommand(`launches.${ name }`, () => launchArrayOfConfigs(launches[name]));
     }
     else {

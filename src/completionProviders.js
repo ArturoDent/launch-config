@@ -32,10 +32,7 @@ exports.makeKeybindingsCompletionProvider = function(context) {
           for (const item in launches) {
 
             // "RunAsArray": ["Launch File (BuildSACC)", "Launch File (TestMultiRoot)"],
-            if (typeof launches[item] === 'object') {
-              completionItemArray.push(makeCompletionItem(item, position));
-            }
-            else if ((typeof launches[item] !== 'string')) {
+            if ((typeof launches[item] !== 'string') && (!Array.isArray(launches[item]))) {
                 continue;
             }
             else {
@@ -71,14 +68,27 @@ exports.makeSettingsCompletionProvider = function(context) {
                         //   "someName": ["<completion here>"]
                         // },
 
-        // get all text until the current `position` and check if it reads `:\s*"$` at the end
+        // get all text until the current `position` and check if it reads `:\s*"$` before the cursor
         const linePrefix = document.lineAt(position).text.substr(0, position.character);
 
         // works in arrays as well
-        const regex = /[:,]\s*("|\[")$/g;
+        let regex = /[:,]\s*("|\[")$/g;
         if (linePrefix.search(regex) === -1) {
           return undefined;
         }
+
+        // check that cursor position is within "launches": { | }, i.e., within our setting
+        // ("launches"\s*:\s*{[^}]*?})  
+
+        let fullText = document.getText();
+        regex = /(?<launches>"launches"\s*:\s*{[^}]*?})/;  // our 'launches' setting
+        let launchMatch = fullText.match(regex);
+         
+        let startPos = document.positionAt(launchMatch.index);  // "launches" index
+        let endPos = document.positionAt(launchMatch.index + launchMatch.groups.launches.length);
+
+        let launchRange = new vscode.Range(startPos, endPos);
+        if (!launchRange.contains(position)) return undefined;  // not in the 'launches' setting
 
         const workSpaceFolders = vscode.workspace.workspaceFolders;
         let nameArray = getLaunchConfigNameArray(workSpaceFolders);
@@ -118,12 +128,6 @@ function getLaunchConfigNameArray (workSpaceFolders) {
   // let configArray = vscode.workspace.getConfiguration('launch').compounds;
   // configArray = configArray.concat(vscode.workspace.getConfiguration('launch').configurations);
 
-  // configArray.forEach(config => {
-  //   if (typeof config.name === 'string') {
-  //     nameArray.push(`${ config.name }`);
-  //   }
-  // });
-  
   workSpaceFolders.forEach((workSpace) => {
 
     launchConfigs = vscode.workspace.getConfiguration('launch', workSpace.uri);
