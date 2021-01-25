@@ -133,7 +133,7 @@ The `name` key and value can be anywhere within its configuration - it does not 
 ```
 </br>
 
-2.  **launch.ifDebugSessionRunning** : Options: `"stop/start"`, `"stop"` (the default), or `"restart"`  
+2.  **launches.ifDebugSessionRunning** : Options: `"stop/start"`, `"stop"` (the default), or `"restart"`  
 
 This setting controls how to handle a currently running debug session when triggering the keybinding you have set up for that launch configuration.   See more at [session options](options.md).   
 
@@ -209,9 +209,12 @@ Choose whatever different keybindings you wish.  Here are example keybindings (i
 
 2. For some reason, when you start multiple debug sessions and switch between them with the debug toolbar, vscode will not always show the arrow for `Continue` but stay with `Pause` - you can get it to show the `Continue` arrow by clicking on the Debug Call Stack session (the top entry for each debug session with the *bug* icon).  
 
-<img src="https://github.com/ArturoDent/launch-config/blob/master/images/debugKick.gif?raw=true" width="600" height="200" alt="Debug toolbar doesn't show Continue"/>  
-
 <br/>
+
+<img src="https://github.com/ArturoDent/launch-config/blob/master/images/debugKick.gif?raw=true" width="700" height="300" alt="Debug toolbar doesn't show Continue"/>
+
+<br/><br/>
+  
 
 3.  In a multi-root workspace you can create launch configurations and compounds in a `*.code-workspace` file.  This extension is able to retrieve those but **cannot** scope a debugging session to that file.  Thus launch configurations in a `*.code-workspace` can not be used with this extension.  `vscode.debug.startDebugging(workspaceFolder|undefined, name|Configuration)` needs to be scoped to a workspaceFolder.
 
@@ -288,7 +291,7 @@ For debugging [DJ4ddi: issue 1](https://github.com/ArturoDent/launch-config/issu
 
 * 0.6.0 &emsp; Fixed so intellisense is only within the 'launches' setting, not triggered in other unrelated settings. 
 
-* 0.7.0 &emsp; Added `launch.ifDebugSessionRunning` setting to stop, restart or stop/start a running debug session.  
+* 0.7.0 &emsp; Added `launches.ifDebugSessionRunning` setting to stop, restart or stop/start a running debug session.  
 &emsp;&emsp; &emsp; Added support for an argument in keybindings for individual debug session control.
 
 
