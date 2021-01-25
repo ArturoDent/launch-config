@@ -11,6 +11,10 @@ So be careful, if you use this extension to start a launch configuration from a 
 
 </br>
 
+Previously, if you had started a debug seesion with a keybinding, and then re-triggered the same keybinding, you would get a warning notification from vscode about attempting to start an already running launch configuration.  With v0.7.0 this has been reworked so that you have more control over an already running debug session.  Now you can choose to stop it, stop and then start it, or restart it either through a setting which controls the handling of all currently running debug sessions or through a keybinding argument for that specific debug session.
+
+For more on this new functionality, see [session options](options.md).
+
 -----------------------------
 
 ### Features
@@ -70,9 +74,9 @@ Trigger from a Project A or Project B editor:
 ## Extension Settings
  
 
-### This extension contributes one setting:</br>
+### This extension contributes two settings:</br>
 
-- `launches` (an object of key:value pairs): Identify by using your `launch.json` `"name"` which configuration you would like to run.  You can use `"compounds"` configurations as well.</br>
+1. **launches** (an object of key:value pairs): Identify by using your `launch.json` `"name"` which configuration you would like to run.  You can use `"compounds"` configurations as well.</br>
 
 The first part of each entry, like `"RunNodeCurrentFile"`, can be anything you want (without spaces) - you will use it in the keybinding.  The second part, like `"Launch File"`, is the name of the configuration you would like to run. In `settings.json`:
 
@@ -129,6 +133,13 @@ The `name` key and value can be anywhere within its configuration - it does not 
 ```
 </br>
 
+2.  **launch.ifDebugSessionRunning** : Options: `"stop/start"`, `"stop"` (the default), or `"restart"`  
+
+This setting controls how to handle a currently running debug session when triggering the keybinding you have set up for that launch configuration.   See more at [session options](options.md).   
+
+
+<br />
+
 
 -----------------------------------------------------------------------------------------------
 
@@ -159,7 +170,8 @@ Choose whatever different keybindings you wish.  Here are example keybindings (i
   },
   {
     "key": "alt+g",
-    "command": "launches.RunCompound"
+    "command": "launches.RunCompound",
+    "args": "restart"     // see Note below on using args in a keybinding
   },
   {
     "key": "alt+k",
@@ -168,6 +180,8 @@ Choose whatever different keybindings you wish.  Here are example keybindings (i
   ```
 
   You will get intellisense in your `keybindings.json` file for the `launches.showAllLaunchConfigs` command and upon typing the `"launches."` part of the command.  Then you will see a list of your available completions from your `settings.json`, such as `RunAsArray` and `RunCompound`.
+
+  * Note: see [session options](options.md) for more on using args in a keybinding
 
 
 <!-- ![Intellisense for Keybindings.json](images/keybindingsIntellisense.gif) -->
@@ -179,9 +193,29 @@ Choose whatever different keybindings you wish.  Here are example keybindings (i
 
 ## Known Issues
 
-In a multi-root workspace you can create launch configurations and compounds in a `*.code-workspace` file.  This extension is able to retrieve those but **cannot** scope a debugging session to that file.  Thus launch configurations in a `*.code-workspace` can not be used with this extension.  `vscode.debug.startDebugging(workspaceFolder|undefined, name|Configuration)` needs to be scoped to a workspaceFolder.
+1.  The `restart` option does not work when re-launching a browser.  Example:
 
-There is an unusual bug in vscode that pertains only to multi-root workspaces where you have at least two `launch.json` files with identically-named configurations that are used in a compound configuration.  So if you have this in *projectA's* `launch.json`:
+```jsonc
+  {
+    "type": "chrome",
+    "request": "launch",
+    "name": "Launch Chrome against localhost",
+    "url": "http://localhost:8081",
+    "file": "${workspaceFolder}/build.html"
+  }
+  ```
+
+  The browser will not successfully restart the **second time** - **use the `stop/start` option instead** when launching browsers.
+
+2. For some reason, when you start multiple debug sessions and switch between them with the debug toolbar, vscode will not always show the arrow for `Continue` but stay with `Pause` - you can get it to show the `Continue` arrow by clicking on the Debug Call Stack session (the top entry for each debug session with the *bug* icon).  
+
+<img src="https://github.com/ArturoDent/launch-config/blob/master/images/debugKick.gif?raw=true" width="600" height="200" alt="Debug toolbar doesn't show Continue"/>  
+
+<br/>
+
+3.  In a multi-root workspace you can create launch configurations and compounds in a `*.code-workspace` file.  This extension is able to retrieve those but **cannot** scope a debugging session to that file.  Thus launch configurations in a `*.code-workspace` can not be used with this extension.  `vscode.debug.startDebugging(workspaceFolder|undefined, name|Configuration)` needs to be scoped to a workspaceFolder.
+
+4.  There is an unusual bug in vscode that pertains only to multi-root workspaces where you have at least two `launch.json` files with identically-named configurations that are used in a compound configuration.  So if you have this in *projectA's* `launch.json`:
 
 ```jsonc
 
@@ -201,15 +235,19 @@ Of course, you shouldn't have a compound config that lists a configuration that 
 
 -----------------------
 
+
 ## TODO
 
 [ X ] - Add support for multiple workspaceFolders, finished in v0.4.  
 [ X ] - Explore running multiple debug sessions from one keybinding [v0.4].  
 [ X ] - Provide intellisense for settings.json, with all `"names"` fron launch.json  [v0.3].  
-[ X ] - Provide intellisense for `launches.` commands in keybindings.json from settings.json keys  [v0.2].  
-[&emsp; ] - Explore generating a command directly from keybindings.  
+[ X ] - Provide intellisense for `launches.` commands in keybindings.json from settings.json keys  [v0.2].    
 [ X ] - Add command and QuickPanel launch config and selections [v0.5].  
+[ X ] - Add support for stopping, restarting or stop/start a previously running debug session  [v0.7].  
 [&emsp; ] - Explore retrieval of launch configs from `.code-workspace` files in a multi-root workspace.  
+[&emsp; ] - Explore support for task arguments.  
+[&emsp; ] - Explore generating a command directly from keybindings.
+[&emsp; ] - Provide intellisense for `args` in `keybindings.json`.  
 
 
 -------------------------
@@ -220,33 +258,38 @@ For the addition of the ability to bind any number of launch configurations to k
 
 For determining the workspaceFolder of the current file, I used code from [rioj7's command-variable](https://github.com/rioj7/command-variable/tree/39ff184e2c32e01e8dd429a796568b2ef6617d32).
 
-For helping getting Intellisense working in keybindings.json for `launches.` commands, see [rioj7's answer](https://stackoverflow.com/a/64593598/836330).
+For helping getting Intellisense working in keybindings.json for `launches.` commands, see [rioj7's answer](https://stackoverflow.com/a/64593598/836330).  
+
+For debugging [DJ4ddi: issue 1](https://github.com/ArturoDent/launch-config/issues/1) and filing Github issue [Restart specific debugger using command](https://github.com/microsoft/vscode/issues/114467) that enabled the use of `vscode.commands.executeCommand('workbench.action.debug.restart')` with arguments.  
 
 -------------------------
 
 ## Release Notes
 
 * 0.0.1 &emsp;  Initial release of `launch-config` extension
+.
+* 0.0.2 &emsp;  Added readme file and images.
 
-* 0.0.2 &emsp;  Added readme file and images
+* 0.0.3 &emsp;  Switched to `vscode.debug.startDebugging()` - much simpler.
 
-* 0.0.3 &emsp;  Switched to `vscode.debug.startDebugging()` - much simpler
+* 0.0.4  &emsp; **BREAKING CHANGE** Added ability to bind any number of launch configs.
 
-* 0.0.4  &emsp; **BREAKING CHANGE** Added ability to bind any number of launch configs
+* 0.1.0 &emsp;  Added preliminary support for multiple workspaceFolders.
 
-* 0.1.0 &emsp;  Added preliminary support for multiple workspaceFolders
+* 0.2.0 &emsp;  Added Intellisense in keybindings.json commands.
 
-* 0.2.0 &emsp;  Added Intellisense in keybindings.json commands
+* 0.3.0 &emsp;  Added Intellisense in settings.json for launch configuration/compound 'name'.
 
-* 0.3.0 &emsp;  Added Intellisense in settings.json for launch configuration/compound 'name'
+* 0.4.0 &emsp;  More on using multi-root workspaces with multiple `launch.json` files.    
+&emsp;&emsp; &emsp; Added the ability to run an array of launch configs from a single command.  
+&emsp;&emsp; &emsp; Intellisense for array commands like `"RunAsArray": ["Launch Build.js (BuildSACC)", "Launch Build.js2 (TestMultiRoot)"]`.
 
-* 0.4.0 &emsp;  More on using multi-root workspaces with multiple `launch.json` files    
-&emsp;&emsp; &emsp; Added the ability to run an array of launch configs from a single command  
-&emsp;&emsp; &emsp; Intellisense for array commands like `"RunAsArray": ["Launch Build.js (BuildSACC)", "Launch Build.js2 (TestMultiRoot)"]`
+* 0.5.0 &emsp;  Added command to show a QuickPick panel of all available launch configs, and select therefrom.
 
-* 0.5.0 &emsp;  Added command to show a QuickPick panel of all available launch configs, and select therefrom
+* 0.6.0 &emsp; Fixed so intellisense is only within the 'launches' setting, not triggered in other unrelated settings. 
 
-* 0.6.0 &emsp; Fixed so intellisense is only within the 'launches' setting, not triggered in other unrelated settings 
+* 0.7.0 &emsp; Added `launch.ifDebugSessionRunning` setting to stop, restart or stop/start a running debug session.  
+&emsp;&emsp; &emsp; Added support for an argument in keybindings for individual debug session control.
 
 
  

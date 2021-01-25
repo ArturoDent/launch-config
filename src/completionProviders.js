@@ -2,10 +2,8 @@ const vscode = require('vscode');
 
 
 /**
- * @desc - register a CompletionProvider for keybindings.json
- * 
- * @param {object} context
- * @returns a CompletionProvider 
+ * @description - register a CompletionItemProvider for keybindings.json from settings.json
+ * @param {vscode.ExtensionContext} context
  */
 exports.makeKeybindingsCompletionProvider = function(context) {
     const configCompletionProvider = vscode.languages.registerCompletionItemProvider (
@@ -14,10 +12,11 @@ exports.makeKeybindingsCompletionProvider = function(context) {
                             // eslint-disable-next-line no-unused-vars
         provideCompletionItems(document, position, token, context) {
 
-                            // {
-                            //   "key": "alt+f",
-                            //   "command": "launches.<completion here>"
-                            // },
+              // {
+              //   "key": "alt+f",
+              //   "command": "launches.<completion here>",  <== from settings.json
+              //   "args": "restart"  <== optional
+              // },
 
           // get all text until the cursor `position` and check if it reads `"launches.`
           const linePrefix = document.lineAt(position).text.substr(0, position.character);
@@ -50,23 +49,21 @@ exports.makeKeybindingsCompletionProvider = function(context) {
 
 
 /**
- * @desc - register a CompletionProvider for settings.json
- * 
- * @param {object} context
- * @returns a CompletionProvider 
+ * @description - register a CompletionItemProvider for settings.json from launch/compound configs
+ * @param {vscode.ExtensionContext} context
  */
-exports.makeSettingsCompletionProvider = function(context) { 
+exports.makeSettingsCompletionProvider = function(context) {
   const settingsCompletionProvider = vscode.languages.registerCompletionItemProvider (
     { pattern: '**/settings.json' },
     {
                         // eslint-disable-next-line no-unused-vars
       provideCompletionItems(document, position, token, context) {
 
-                        // "launches": {
-                        //   "RunNodeCurrentFile": "Launch File (workspaceFolderName1)",
-                        //   "RunCompound1": "Launch file and start chrome (workspaceFolderName2)"
-                        //   "someName": ["<completion here>"]
-                        // },
+            // "launches": {
+            //   "RunNodeCurrentFile": "Launch File (workspaceFolderName1)",
+            //   "RunCompound1": "Launch file and start chrome (workspaceFolderName2)"
+            //   "someName": "<name> (<workspaceFolder.name>)" <== completions here
+            // },
 
         // get all text until the current `position` and check if it reads `:\s*"$` before the cursor
         const linePrefix = document.lineAt(position).text.substr(0, position.character);
@@ -77,23 +74,23 @@ exports.makeSettingsCompletionProvider = function(context) {
           return undefined;
         }
 
-        // check that cursor position is within "launches": { | }, i.e., within our setting
-        // ("launches"\s*:\s*{[^}]*?})  
+        // check that cursor position is within "launches": { | }, i.e., within our "launches" setting
 
         let fullText = document.getText();
         regex = /(?<launches>"launches"\s*:\s*{[^}]*?})/;  // our 'launches' setting
         let launchMatch = fullText.match(regex);
-         
+
         let startPos = document.positionAt(launchMatch.index);  // "launches" index
         let endPos = document.positionAt(launchMatch.index + launchMatch.groups.launches.length);
 
         let launchRange = new vscode.Range(startPos, endPos);
-        if (!launchRange.contains(position)) return undefined;  // not in the 'launches' setting
+        if (!launchRange.contains(position)) return undefined;  // cursor is not in the 'launches' setting
 
         const workSpaceFolders = vscode.workspace.workspaceFolders;
         let nameArray = getLaunchConfigNameArray(workSpaceFolders);
 
         if (nameArray.length === 0) return [];  // return an empty array
+
         let completionItemArray = [];
 
         for (const item in nameArray) {
@@ -114,23 +111,19 @@ exports.makeSettingsCompletionProvider = function(context) {
 }
 
 /**
- * @desc - build an array of all config/compound launch names
- * 
- * @param {object} workSpaceFolders - an array
- * @returns {object} nameArray
+ * @description - build an array of all config/compound launch names
+ *
+ * @param {readonly vscode.WorkspaceFolder[]} workSpaceFolders - an array
+ * @returns {String[]} nameArray
  */
 function getLaunchConfigNameArray (workSpaceFolders) {
 
-  let launchConfigs;
   let nameArray = [];
-
-  // configurations and compounds in '*.code-workspace' file of multi-root workspace
-  // let configArray = vscode.workspace.getConfiguration('launch').compounds;
-  // configArray = configArray.concat(vscode.workspace.getConfiguration('launch').configurations);
 
   workSpaceFolders.forEach((workSpace) => {
 
-    launchConfigs = vscode.workspace.getConfiguration('launch', workSpace.uri);
+    let launchConfigs = vscode.workspace.getConfiguration('launch', workSpace.uri);
+
     let configArray = launchConfigs.get('configurations');
     configArray = configArray.concat(launchConfigs.get('compounds'));
 
@@ -148,27 +141,27 @@ function getLaunchConfigNameArray (workSpaceFolders) {
 
 
 /**
- * @desc - from a string input make a CompletionItemKind.Text
- * 
- * @param {string} key 
- * @param {object} position
- * @returns - CompletionItemKind.Text
+ * @description - from a string input make a CompletionItemKind.Text
+ *
+ * @param {string} key
+ * @param {vscode.Position} position
+ * @returns {vscode.CompletionItem} - CompletionItemKind.Text
  */
 function makeCompletionItem(key, position) {
-  
+
   let item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Text);
   item.range = new vscode.Range(position, position);
 
   const regex = /^(.+)\s\((.*)\)$|^(.*)$/m;
       // eslint-disable-next-line no-unused-vars
   let [fullString, configName, folderName] = key.match(regex);
-  
+
   item.sortText = folderName;
 
   // remove spaces added to align folders in completionProvider
   let stripSpaces = /(\s{2,})(\([^)]+\))$/g;
   item.insertText = key.replace(stripSpaces, ' $2');
-  
+
   return item;
 }
 

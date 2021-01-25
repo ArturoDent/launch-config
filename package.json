@@ -3,7 +3,7 @@
  "displayName": "Launch Configs",
  "description": "Create shortcuts to launch specific debug configurations.",
  "publisher": "ArturoDent",
- "version": "0.6.0",
+ "version": "0.6.7",
  "license": "MIT",
  "repository": {
   "type": "git",
@@ -29,19 +29,29 @@
   "commands": [
    {
     "command": "launches.showAllLaunchConfigs",
-    "title": "Launch Configs: Show all launch configurations"
-   },
-   {
-    "command": "L.editor.action.copyLinesDownAction",
-    "title": "?my copy lines down title"
+    "title": "Show all launch configurations",
+    "category": "Launch Configs"
    }
   ],
   "configuration": {
-   "type": "object",
-   "title": "Launches Debug Configuration",
-   "properties": {
-    "launches": {}
-   }
+    "title": "launch-config",
+    "type":  "object",
+    "properties": {
+      "launches.ifDebugSessionRunning": {
+        "type": "string",
+        "scope": "resource",
+        "enum": ["stop/start", "stop", "restart"],
+        "enumDescriptions": [
+          "First stop the selected current debug session and then start it again.  Not the same as a restart.",
+          "If you attempt to start a currently running debug session, it will be stopped - this is the default condition.",
+          "Restart the selected launch configuration."
+        ],
+        "default": "stop",
+        "description": "Should the current debug session be stopped, stopped/started or restarted"
+      },
+
+      "launches":  { }
+    }
   }
  },
  "scripts": {

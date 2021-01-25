@@ -13,7 +13,7 @@ exports.getExtensionLaunchSetting = function()  {
 
   // if the setting is the default value from package.json
   // i.e., there is no user setting
-  if (settings.get('runLaunchConfiguration').name !== "config 'name' to run here") 
+  if (settings.get('runLaunchConfiguration').name !== "config 'name' to run here")
     return settings.get('runLaunchConfiguration').name;
 
   else {
@@ -32,3 +32,5 @@ exports.getExtensionOpenDebugSetting = function()  {
   let shouldOpenDebugView = settings.get('openDebug');
   return shouldOpenDebugView;
 };
+
+
