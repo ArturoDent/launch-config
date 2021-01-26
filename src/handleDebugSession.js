@@ -86,9 +86,9 @@ exports.isMatchingDebugSession = function (debugSessions, name) {
 
 
 /**
- * @description - get the value of the "launch.ifDebugSessionRunning" setting
+ * @description - get the value of the "launches.ifDebugSessionRunning" setting
  * @returns {string} - "stop" or "stop/start" or "restart"
  */
 exports.getStopStartSetting = function () {
-  return vscode.workspace.getConfiguration().get("launch.ifDebugSessionRunning");
+  return vscode.workspace.getConfiguration().get("launches.ifDebugSessionRunning");
 }

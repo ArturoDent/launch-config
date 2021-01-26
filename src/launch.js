@@ -84,7 +84,7 @@ exports.launchSelectedConfig = async function (name, arg, debugSessions) {
       // eslint-disable-next-line no-unused-vars
   let [fullString, configName, folderName, configNameNoFolder] = name.match(regex);
 
-  // if already running, check setting: launch.ifDebugSessionRunning and decide how to handle
+  // if already running, check setting: launches.ifDebugSessionRunning and decide how to handle
   const runningSession = handleDebugSession.isMatchingDebugSession(debugSessions, name);
 
   if (runningSession.match) {
