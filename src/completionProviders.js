@@ -1,4 +1,5 @@
 const vscode = require('vscode');
+const utilities = require('./utilities');
 
 
 /**
@@ -152,11 +153,9 @@ function makeCompletionItem(key, position) {
   let item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Text);
   item.range = new vscode.Range(position, position);
 
-  const regex = /^(.+)\s\((.*)\)$|^(.*)$/m;
-      // eslint-disable-next-line no-unused-vars
-  let [fullString, configName, folderName] = key.match(regex);
+  let setting = utilities.parseConfigurationName(key);
 
-  item.sortText = folderName;
+  item.sortText = setting.folder;
 
   // remove spaces added to align folders in completionProvider
   let stripSpaces = /(\s{2,})(\([^)]+\))$/g;
