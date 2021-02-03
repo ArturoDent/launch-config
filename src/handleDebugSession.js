@@ -21,6 +21,8 @@ exports.stopStart = async function (session, name) {
 
   await vscode.debug.stopDebugging(session);
 
+  // Give it a moment to stop fully.
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
   let setting = utilities.parseConfigurationName(name);
 
