@@ -2,7 +2,7 @@ const vscode = require('vscode');
 
 
 /**
- * @description - register a CompletionItemProvider for keybindings.json from settings.json
+ * @description - register a CompletionItemProvider for keybindings.json
  * @param {vscode.ExtensionContext} context
  */
 exports.makeKeybindingsCompletionProvider = function(context) {
@@ -20,6 +20,11 @@ exports.makeKeybindingsCompletionProvider = function(context) {
 
           // get all text until the cursor `position` and check if it reads `"launches.`
           const linePrefix = document.lineAt(position).text.substr(0, position.character);
+
+          // (?<="launches\.)[^{]*\n^.*"args": "
+          // const prevLine = document.lineAt(position.line - 1).text;
+          // if (prevLine.search)
+
           if (!linePrefix.endsWith('"launches.')) {
             return undefined;
           }
@@ -41,7 +46,8 @@ exports.makeKeybindingsCompletionProvider = function(context) {
           return completionItemArray;
         }
       },
-      '.'       // trigger intellisense/completion
+      // '.'       // trigger intellisense/completion
+      '.', '"'       // trigger intellisense/completion
     );
 
   context.subscriptions.push(configCompletionProvider);

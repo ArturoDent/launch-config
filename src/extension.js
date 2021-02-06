@@ -80,6 +80,7 @@ function activate(context) {
   }));
 
   context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => {
+    // dispos() here?
     launch.loadLaunchSettings(context, disposables, debugSessions);
   }))
 

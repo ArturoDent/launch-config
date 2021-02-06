@@ -21,9 +21,14 @@ exports.stopStart = async function (session, name) {
 
   await vscode.debug.stopDebugging(session);
 
+<<<<<<< Updated upstream
   const regex = /^(.+?)\s+\(([^)]*)\)$|^(.*)$/m;
   // eslint-disable-next-line no-unused-vars
   let [fullString, configName, folderName, configNameNoFolder] = name.match(regex);
+=======
+  // Give it a moment to stop fully
+  await new Promise(resolve => setTimeout(resolve, 1000));
+>>>>>>> Stashed changes
 
   let ConfigWorkSpaceFolder;
 
@@ -75,9 +80,16 @@ exports.isMatchingDebugSession = function (debugSessions, name) {
   let launchName = name.replace(/^(.*?)\s*\(.*\)$/m, '$1');
 
   debugSessions.forEach(session => {
+<<<<<<< Updated upstream
     if (session.name.replace(/(.*):.*$/m, '$1') === launchName && session.workspaceFolder.name === folderName) {
       match = true;
       matchSession = session;
+=======
+    if (session.name.replace(/(.*):.*$/m, '$1') === setting.config
+      && !setting.folder || setting.folder === session.workspaceFolder.name ) {
+        match = true;
+        matchSession = session;
+>>>>>>> Stashed changes
     }
   })
 

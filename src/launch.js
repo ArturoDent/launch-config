@@ -78,12 +78,6 @@ exports.launchArrayOfConfigs = async function (nameArray, arg, debugSessions) {
  */
 exports.launchSelectedConfig = async function (name, arg, debugSessions) {
 
-  // name = "Launch Build.js (Project A Folder)"
-
-  const regex = /^(.+?)\s+\(([^)]*)\)$|^(.*)$/m;
-      // eslint-disable-next-line no-unused-vars
-  let [fullString, configName, folderName, configNameNoFolder] = name.match(regex);
-
   // if already running, check setting: launches.ifDebugSessionRunning and decide how to handle
   const runningSession = handleDebugSession.isMatchingDebugSession(debugSessions, name);
 
@@ -99,15 +93,22 @@ exports.launchSelectedConfig = async function (name, arg, debugSessions) {
     return;
   }
 
-  let ConfigWorkSpaceFolder;
+  // name = "Launch Build.js (Project A Folder)"
+  // name = "Launch Build.js"
 
-  if (folderName === 'code-wordspace') await vscode.debug.startDebugging(undefined, configName);
+  // const regex = /^(.+?)\s+\(([^)]*)\)$|^(.*)$/m;
+  let setting = utilities.parseConfigurationName(name);
+
+      // eslint-disable-next-line no-unused-vars
+  // let [fullString, configName, folderName, configNameNoFolder] = name.match(regex);
+
+  if (setting.folder === 'code-workspace') vscode.debug.startDebugging(undefined, setting.config);
   else {
     // check if folderName is empty, if so use the  workSpaceFolder of the active editor
-    if (!folderName) ConfigWorkSpaceFolder = utilities.getActiveWorkspaceFolder();
-    else ConfigWorkSpaceFolder = vscode.workspace.workspaceFolders.find(ws => ws.name === folderName);
+    let workspace = setting.folder
+      ? vscode.workspace.workspaceFolders.find(ws => ws.name === setting.folder)
+      : utilities.getActiveWorkspaceFolder();
 
-    configName = configName ? configName : configNameNoFolder;
-    vscode.debug.startDebugging(ConfigWorkSpaceFolder, configName);
+    await vscode.debug.startDebugging(workspace, setting.config);
   }
 }
