@@ -21,20 +21,19 @@ exports.stopStart = async function (session, name) {
 
   await vscode.debug.stopDebugging(session);
 
-  const regex = /^(.+?)\s+\(([^)]*)\)$|^(.*)$/m;
-  // eslint-disable-next-line no-unused-vars
-  let [fullString, configName, folderName, configNameNoFolder] = name.match(regex);
+  // Give it a moment to stop fully.
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
-  let ConfigWorkSpaceFolder;
+  let setting = utilities.parseConfigurationName(name);
 
-  if (folderName === 'code-wordspace') vscode.debug.startDebugging(undefined, configName);
+  if (setting.folder === 'code-workspace') vscode.debug.startDebugging(undefined, setting.config);
   else {
     // check if folderName is empty, if so use the  workSpaceFolder of the active editor
-    if (!folderName) ConfigWorkSpaceFolder = utilities.getActiveWorkspaceFolder();
-    else ConfigWorkSpaceFolder = vscode.workspace.workspaceFolders.find(ws => ws.name === folderName);
+    let workspace = setting.folder
+      ? vscode.workspace.workspaceFolders.find(ws => ws.name === setting.folder)
+      : utilities.getActiveWorkspaceFolder();
 
-    configName = configName ? configName : configNameNoFolder;
-    await vscode.debug.startDebugging(ConfigWorkSpaceFolder, configName);
+    await vscode.debug.startDebugging(workspace, setting.config);
     vscode.commands.executeCommand('workbench.debug.action.focusCallStackView');
   }
 }
@@ -71,11 +70,11 @@ exports.isMatchingDebugSession = function (debugSessions, name) {
 
   if (!debugSessions.size) return { match:match, session:matchSession};
 
-  let folderName = name.replace(/.*\(([\w\s]*)\)/, '$1');
-  let launchName = name.replace(/^(.*?)\s*\(.*\)$/m, '$1');
+  let setting = utilities.parseConfigurationName(name);
 
   debugSessions.forEach(session => {
-    if (session.name.replace(/(.*):.*$/m, '$1') === launchName && session.workspaceFolder.name === folderName) {
+    if (session.name.replace(/(.*):.*$/m, '$1') === setting.config
+      && !setting.folder || setting.folder === session.workspaceFolder.name ) {
       match = true;
       matchSession = session;
     }
