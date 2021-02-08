@@ -21,25 +21,23 @@ exports.stopStart = async function (session, name) {
 
   await vscode.debug.stopDebugging(session);
 
-<<<<<<< Updated upstream
-  const regex = /^(.+?)\s+\(([^)]*)\)$|^(.*)$/m;
-  // eslint-disable-next-line no-unused-vars
-  let [fullString, configName, folderName, configNameNoFolder] = name.match(regex);
-=======
   // Give it a moment to stop fully
   await new Promise(resolve => setTimeout(resolve, 1000));
->>>>>>> Stashed changes
 
-  let ConfigWorkSpaceFolder;
+  let setting = utilities.parseConfigurationName(name);
 
-  if (folderName === 'code-wordspace') vscode.debug.startDebugging(undefined, configName);
+  if (setting.folder === 'code-workspace') vscode.debug.startDebugging(undefined, setting.config);
   else {
-    // check if folderName is empty, if so use the  workSpaceFolder of the active editor
-    if (!folderName) ConfigWorkSpaceFolder = utilities.getActiveWorkspaceFolder();
-    else ConfigWorkSpaceFolder = vscode.workspace.workspaceFolders.find(ws => ws.name === folderName);
 
-    configName = configName ? configName : configNameNoFolder;
-    await vscode.debug.startDebugging(ConfigWorkSpaceFolder, configName);
+    // check if folderName is empty, if so use the  workSpaceFolder of the active editor
+
+    let workspace;
+
+    if (setting.folder && vscode.workspace.workspaceFolders)
+      workspace = vscode.workspace.workspaceFolders.find(ws => ws.name === setting.folder);
+    else workspace = utilities.getActiveWorkspaceFolder();
+
+    await vscode.debug.startDebugging(workspace, setting.config);
     vscode.commands.executeCommand('workbench.debug.action.focusCallStackView');
   }
 }
@@ -63,7 +61,7 @@ exports.stop = async function (session) {
  *
  * @typedef  {Object} MatchObject
  * @property {boolean} match - is there a matching debugSession
- * @property {vscode.DebugSession} session - null or the debugSession in debugSessions Set that matches the running debugSession
+ * @property {vscode.DebugSession | null} session - null or the debugSession in debugSessions Set that matches the running debugSession
  *
  * @returns {MatchObject}
  */
@@ -76,20 +74,15 @@ exports.isMatchingDebugSession = function (debugSessions, name) {
 
   if (!debugSessions.size) return { match:match, session:matchSession};
 
-  let folderName = name.replace(/.*\(([\w\s]*)\)/, '$1');
-  let launchName = name.replace(/^(.*?)\s*\(.*\)$/m, '$1');
+  let setting = utilities.parseConfigurationName(name);
 
   debugSessions.forEach(session => {
-<<<<<<< Updated upstream
-    if (session.name.replace(/(.*):.*$/m, '$1') === launchName && session.workspaceFolder.name === folderName) {
-      match = true;
-      matchSession = session;
-=======
+
     if (session.name.replace(/(.*):.*$/m, '$1') === setting.config
-      && !setting.folder || setting.folder === session.workspaceFolder.name ) {
+      // @ts-ignore
+      && (!setting.folder || setting.folder === session.workspaceFolder.name )) {
         match = true;
         matchSession = session;
->>>>>>> Stashed changes
     }
   })
 
@@ -99,7 +92,7 @@ exports.isMatchingDebugSession = function (debugSessions, name) {
 
 /**
  * @description - get the value of the "launches.ifDebugSessionRunning" setting
- * @returns {string} - "stop" or "stop/start" or "restart"
+ * @returns {string | undefined} - "stop" or "stop/start" or "restart"
  */
 exports.getStopStartSetting = function () {
   return vscode.workspace.getConfiguration().get("launches.ifDebugSessionRunning");

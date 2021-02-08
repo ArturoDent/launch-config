@@ -2,6 +2,7 @@ const vscode = require('vscode');
 const launch = require('./launch');
 const providers = require('./completionProviders');
 
+/** @type { Array<vscode.Disposable> } */
 let disposables = [];
 let debugSessions = new Set();
 
@@ -32,7 +33,8 @@ function activate(context) {
 
     nameArray = nameArray.map(name => {
 
-          // eslint-disable-next-line no-unused-vars
+      // @ts-ignore
+      // eslint-disable-next-line no-unused-vars
       let [fullString, configName, folderName] = name.match(regex);
       let padding = (80 - configName.length > 0) ? (80 - configName.length)/1.4 : 1;
       return configName.padEnd(padding, ' ') + folderName;
@@ -60,6 +62,7 @@ function activate(context) {
     // if configName and workspaceFolder already in Set, don't add
     debugSessions.forEach(storedSession => {
       if (storedSession.name === session.name.replace(/(.*):.*$/m, '$1') &&
+          // @ts-ignore
           storedSession.workspaceFolder.name === session.workspaceFolder.name)
               alreadyStored = true;
     })
@@ -80,18 +83,13 @@ function activate(context) {
   }));
 
   context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => {
-    // dispos() here?
+    for (let disposable of disposables) {
+      disposable.dispose();
+    }
     launch.loadLaunchSettings(context, disposables, debugSessions);
-  }))
-
-  // **************************************************************************************
+  }));
 };
 
 // function deactivate() {}
 
 exports.activate = activate;
-
-// module.exports = {
-// 	activate,
-// 	deactivate
-// }
