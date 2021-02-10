@@ -38,6 +38,7 @@ exports.stopStart = async function (session, name) {
     else workspace = utilities.getActiveWorkspaceFolder();
 
     await vscode.debug.startDebugging(workspace, setting.config);
+    // this can probably be removed after v1.54 is released
     vscode.commands.executeCommand('workbench.debug.action.focusCallStackView');
   }
 }
@@ -61,26 +62,26 @@ exports.stop = async function (session) {
  *
  * @typedef  {Object} MatchObject
  * @property {boolean} match - is there a matching debugSession
- * @property {vscode.DebugSession | null} session - null or the debugSession in debugSessions Set that matches the running debugSession
+ * @property {vscode.DebugSession | null} session - the debugSession in debugSessions Set that matches the running debugSession
  *
  * @returns {MatchObject}
  */
 exports.isMatchingDebugSession = function (debugSessions, name) {
 
   // name = "Launch Build.js (Project A Folder)"
+  // name = "Start 2 node debuggers (Test Bed)" <== a compound
 
   let match = false;
   let matchSession = null;
 
-  if (!debugSessions.size) return { match:match, session:matchSession};
+  // if (!debugSessions.size) return { match:match, session:matchSession};
 
   let setting = utilities.parseConfigurationName(name);
 
   debugSessions.forEach(session => {
 
     if (session.name.replace(/(.*):.*$/m, '$1') === setting.config
-      // @ts-ignore
-      && (!setting.folder || setting.folder === session.workspaceFolder.name )) {
+      && (!setting.folder || setting.folder === session.workspaceFolder?.name )) {
         match = true;
         matchSession = session;
     }

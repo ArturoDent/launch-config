@@ -34,7 +34,7 @@ exports.parseConfigurationName = function (name) {
 
   let match = name.match(regex);
 
-  if (match && match.groups) {
+  if  (match?.groups) {
     return {
       fullName: match[0],
       folder: match.groups.folderName,

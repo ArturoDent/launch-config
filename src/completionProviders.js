@@ -90,7 +90,8 @@ exports.makeSettingsCompletionProvider = function(context) {
         let startPos;
         let endPos;
 
-        if (launchMatch && launchMatch.index && launchMatch.groups) {
+        // if (launchMatch && launchMatch.index && launchMatch.groups) {
+        if (launchMatch?.index && launchMatch?.groups) {
           startPos = document.positionAt(launchMatch.index);  // "launches" index
           endPos = document.positionAt(launchMatch.index + launchMatch.groups.launches.length);
 

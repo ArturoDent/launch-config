@@ -1,9 +1,10 @@
 # Launch Configs
 
 
- This vscode extension allows you to create settings to launch any number of your `launch.json` configurations or compounds via separate keybindings.  These launch configs can be in any root folder in a multi-root workspace.  And a launch config from one root folder can be triggered while in a file from a different root folder.  And you can create arrays of launch configs to run with a single keybinding.</br></br>
+ This vscode extension allows you to create settings to launch any number of your `launch.json` configurations or compound configurations via separate keybindings.  These launch configs can be in any root folder in a multi-root workspace.  And a launch config from one root folder can be triggered while in a file from a different root folder.  And you can create arrays of launch configs to run with a single keybinding.</br></br>
 
-> The named configurations are looked up in `.vscode/launch.json` found in the given folder. Before debugging starts, all unsaved files are saved and the launch configurations are brought up-to-date. Folder specific variables used in the configuration (e.g. `${workspaceFolder}`) are resolved against the given folder. From [startDebugging()](https://code.visualstudio.com/api/references/vscode-api#debug)  documentation.  
+> The named configurations are looked up in `.vscode/launch.json` found in the given folder. Before debugging starts, all unsaved files are saved and the launch configurations are brought up-to-date. Folder specific variables used in the configuration (e.g. `${workspaceFolder}`) are resolved against the given folder.   
+[From [startDebugging()](https://code.visualstudio.com/api/references/vscode-api#debug)  documentation.]  
 
 </br>
 
@@ -19,7 +20,8 @@ For more on this new functionality, see [session options](options.md).
 
 ### Features
 
-* Shortcuts for launch configurations, in `settings.json`:
+* Shortcuts for launch configurations, in `settings.json`
+* Run any launch configuration found in any multi-root folder in a workspace, in `settings.json`  
 ```json
   "launches": {
 
@@ -31,17 +33,11 @@ For more on this new functionality, see [session options](options.md).
 ```json
   {
     "key": "alt+g",                     
-    "command": "launches.RunNodeCurrentFile"
+    "command": "launches.RunNodeCurrentFile",
+    "arg": "restart"              <== optional, see the session options
   }
 ```
-* Run any launch configuration found in any multi-root folder in a workspace, in `settings.json`:
-```json
-  "launches": {
-
-    "RunNodeBuildFileA": "Launch AFile (Project A Folder)",
-    "RunNodeBuildFileB": "Launch BFile (Project B Folder)"
-  }
-``` 
+ 
 Trigger from a Project A or Project B editor:  
 ```json
   {
@@ -246,11 +242,13 @@ Of course, you shouldn't have a compound config that lists a configuration that 
 [ X ] - Provide intellisense for settings.json, with all `"names"` fron launch.json  [v0.3].  
 [ X ] - Provide intellisense for `launches.` commands in keybindings.json from settings.json keys  [v0.2].    
 [ X ] - Add command and QuickPanel launch config and selections [v0.5].  
-[ X ] - Add support for stopping, restarting or stop/start a previously running debug session  [v0.7].  
+[ X ] - Add support for stopping, restarting or stop/start a previously running debug session  [v0.7.0].  
 [&emsp; ] - Explore retrieval of launch configs from `.code-workspace` files in a multi-root workspace.  
 [&emsp; ] - Explore support for task arguments.  
-[&emsp; ] - Explore generating a command directly from keybindings.
+[&emsp; ] - Explore generating a command directly from keybindings.  
 [&emsp; ] - Provide intellisense for `args` in `keybindings.json`.  
+[&emsp; ] - Explore whether compound configuration handling can be stream-lined.   
+[&emsp; ] - Explore whether other compound arguments like `prelaunchTask` and `presentation` can be retrieved on restarts.
 
 
 -------------------------
@@ -292,7 +290,9 @@ For debugging [DJ4ddi: issue 1](https://github.com/ArturoDent/launch-config/issu
 * 0.6.0 &emsp; Fixed so intellisense is only within the 'launches' setting, not triggered in other unrelated settings. 
 
 * 0.7.0 &emsp; Added `launches.ifDebugSessionRunning` setting to stop, restart or stop/start a running debug session.  
-&emsp;&emsp; &emsp; Added support for an argument in keybindings for individual debug session control.
+&emsp;&emsp; &emsp; Added support for an argument in keybindings for individual debug session control.  
+&emsp;&emsp; &emsp; Added more support for settings with no workspaceFolder name.  
+&emsp;&emsp; &emsp; Fixed using keybinding args for compound configurations.
 
 
  

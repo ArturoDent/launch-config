@@ -62,8 +62,8 @@ function activate(context) {
     // if configName and workspaceFolder already in Set, don't add
     debugSessions.forEach(storedSession => {
       if (storedSession.name === session.name.replace(/(.*):.*$/m, '$1') &&
-          // @ts-ignore
-          storedSession.workspaceFolder.name === session.workspaceFolder.name)
+          
+          storedSession.workspaceFolder.name === session.workspaceFolder?.name)
               alreadyStored = true;
     })
 
