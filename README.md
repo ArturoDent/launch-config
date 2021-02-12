@@ -262,7 +262,7 @@ Of course, you shouldn't have a compound config that lists a configuration that 
 [&emsp; ] - Explore retrieval of launch configs from `.code-workspace` files in a multi-root workspace.  
 [&emsp; ] - Explore support for task arguments.  
 [&emsp; ] - Explore generating a command directly from keybindings.  
-[&emsp; ] - Provide intellisense for `args` in `keybindings.json`.  
+[ X ] - Provide intellisense for `args` in `keybindings.json` [v0.7.1].  
 [ X ] - Explore whether compound configuration handling can be stream-lined.   
 [ X ] - Explore whether other compound arguments like `prelaunchTask` and `presentation` can be retrieved on restarts.
 
@@ -308,7 +308,8 @@ For debugging [DJ4ddi: issue 1](https://github.com/ArturoDent/launch-config/issu
 * 0.7.0 &emsp; Added `launch-config.ifDebugSessionRunning` setting to stop, restart or stop/start a running debug session.  
 &emsp;&emsp; &emsp; Added support for an argument in keybindings for individual debug session control.  
 &emsp;&emsp; &emsp; Added more support for settings with no workspaceFolder name.  
-&emsp;&emsp; &emsp; Fixed using keybinding args for compound configurations.
+&emsp;&emsp; &emsp; Fixed using keybinding args for compound configurations.  
+* &emsp;&emsp; &emsp; 0.7.1 &emsp; Added intellisense support in keybindings `args`.
 
 
  

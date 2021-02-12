@@ -38,7 +38,7 @@ exports.loadLaunchSettings = function (context, disposables, debugSessions) {
       });
     }
     else {
-      disposable = vscode.commands.registerCommand(`launches.${ name }`, async (arg) => {
+      disposable = vscode.commands.registerCommand(`launches.${ name }`, (arg) => {
 
         // when started by a task, arg :
         // [

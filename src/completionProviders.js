@@ -18,18 +18,31 @@ exports.makeKeybindingsCompletionProvider = function(context) {
               //   "args": "restart"  <== optional
               // },
 
-          // get all text until the cursor `position` and check if it reads `"launches.`
+          // get all text until the cursor `position` and check if it ends with `"launches.` or '"args": "'
           const linePrefix = document.lineAt(position).text.substr(0, position.character);
 
-          // for args intellisense in keybindings.json
           // (?<="launches\.)[^{]*\n^.*"args": "
-          // const prevLine = document.lineAt(position.line - 1).text;
-          // if (prevLine.search)
 
-          if (!linePrefix.endsWith('"launches.')) {
+          const prevLine = document.lineAt(position.line - 1).text;
+
+          let match = 'command';  // default
+
+          if (!linePrefix.endsWith('"launches.') && linePrefix.search(/"args":\s*"$/m) === -1) {
             return undefined;
           }
 
+          //keybinding "arg" completion
+          if (prevLine.search(/"command": "launches\./) === -1) return undefined;
+          else match = 'arg';
+
+          if (match === 'arg') return [
+            makeCompletionItem('start', position),
+            makeCompletionItem('stop', position),
+            makeCompletionItem('stop/start', position),
+            makeCompletionItem('restart', position)
+          ];
+
+          // "launches." completion
           const launches = vscode.workspace.getConfiguration("launches");
           let completionItemArray = [];
 
@@ -47,8 +60,8 @@ exports.makeKeybindingsCompletionProvider = function(context) {
           return completionItemArray;
         }
       },
-      '.'       // trigger intellisense/completion
-      // '.', '"'       // trigger intellisense/completion
+      // '.'       // trigger intellisense/completion
+      '.', '"'       // trigger intellisense/completion
     );
 
   context.subscriptions.push(configCompletionProvider);

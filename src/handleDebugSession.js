@@ -85,7 +85,7 @@ exports.isMatchingDebugSession = function (debugSessions, name) {
         match = true;
         matchSession = session;
     }
-  })
+  });
   return { match: match, session: matchSession };
 }
 
