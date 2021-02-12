@@ -3,8 +3,9 @@
 
  This vscode extension allows you to create settings to launch any number of your `launch.json` configurations or compound configurations via separate keybindings.  These launch configs can be in any root folder in a multi-root workspace.  And a launch config from one root folder can be triggered while in a file from a different root folder.  And you can create arrays of launch configs to run with a single keybinding.</br></br>
 
+[From [startDebugging()](https://code.visualstudio.com/api/references/vscode-api#debug)  documentation.] ::  
 > The named configurations are looked up in `.vscode/launch.json` found in the given folder. Before debugging starts, all unsaved files are saved and the launch configurations are brought up-to-date. Folder specific variables used in the configuration (e.g. `${workspaceFolder}`) are resolved against the given folder.   
-[From [startDebugging()](https://code.visualstudio.com/api/references/vscode-api#debug)  documentation.]  
+ 
 
 </br>
 
@@ -12,9 +13,9 @@ So be careful, if you use this extension to start a launch configuration from a 
 
 </br>
 
-Previously, if you had started a debug seesion with a keybinding, and then re-triggered the same keybinding, you would get a warning notification from vscode about attempting to start an already running launch configuration.  With v0.7.0 this has been reworked so that you have more control over an already running debug session.  Now you can choose to stop it, stop and then start it, or restart it either through a setting which controls the handling of all currently running debug sessions or through a keybinding argument for that specific debug session.
+Prior to v0.7.0, if you had started a debug session with a keybinding, and then re-triggered the same keybinding, it would fail and you would get a warning notification from vscode about attempting to start an already running launch configuration.  With v0.7.0 this has been reworked so that you have more control over an already running debug session.  Now you can choose to stop it, stop and then start it, start or restart it either through a setting which controls the handling of all currently running debug sessions or through a keybinding argument for that specific debug session.
 
-For more on this new functionality, see [session options](options.md).
+For more on this new functionality, see **[session options](options.md)**.
 
 -----------------------------
 
@@ -22,24 +23,23 @@ For more on this new functionality, see [session options](options.md).
 
 * Shortcuts for launch configurations, in `settings.json`
 * Run any launch configuration found in any multi-root folder in a workspace, in `settings.json`  
-```json
+```jsonc
   "launches": {
-
     "RunNodeCurrentFile": "Serve File (Project A Folder)",
     "RunNodeCurrentFileB": "Launch File (Project B Folder)"
   }
 ``` 
  In keybindings.json or added from the Keyboard Shortcuts UI: 
-```json
+```jsonc
   {
-    "key": "alt+g",                     
+    "key": "alt+g",               <== whatever keybinding you wish    
     "command": "launches.RunNodeCurrentFile",
     "arg": "restart"              <== optional, see the session options
   }
 ```
  
 Trigger from a Project A or Project B editor:  
-```json
+```jsonc
   {
     "key": "alt+h",                       
     "command": "launches.RunNodeBuildFileA"
@@ -50,13 +50,12 @@ Trigger from a Project A or Project B editor:
   }
 ```
 * Run an array of launch configurations from any `launch.json` in the workspace, in `settings.json`:
-```json
+```jsonc
   "launches": {
-
     "RunLaunchArray": ["Launch File (Project A)", "Launch File (Project B)"]
   }
 ```
-```json
+```jsonc
   {
     "key": "alt+j",
     "command": "launches.RunLaunchArray"
@@ -72,15 +71,15 @@ Trigger from a Project A or Project B editor:
 
 ### This extension contributes two settings:</br>
 
-1. **launches** (an object of key:value pairs): Identify by using your `launch.json` `"name"` which configuration you would like to run.  You can use `"compounds"` configurations as well.</br>
+1. **launches** (an object of key : value pairs): Identify by using your `launch.json` `name` which configuration you would like to run.  You can use `"compounds"` configurations as well.</br>
 
-The first part of each entry, like `"RunNodeCurrentFile"`, can be anything you want (without spaces) - you will use it in the keybinding.  The second part, like `"Launch File"`, is the name of the configuration you would like to run. In `settings.json`:
+The first part of each entry, like `"RunNodeFile"`, can be anything you want (without spaces) - you will use it in the keybinding.  The second part, like `"Launch File"`, is the name of the configuration you would like to run. In `settings.json`:
 
 ```jsonc
   "launches": {
 
-    "RunNodeCurrentFile": "Launch File (<some root folder name>)",  // the folder name will be provided for you
-    "RunCompound1": "Launch file and start chrome"     // but you do not need to have a folder name
+    "RunNodeFile": "Launch File (<some workspaceFolder name>)",  // the folder name will be provided for you
+    "RunCompound1": "Launch file and start chrome"               // but you do not need to have a folder name
   },
 ```
 
@@ -129,9 +128,9 @@ The `name` key and value can be anywhere within its configuration - it does not 
 ```
 </br>
 
-2.  **launches.ifDebugSessionRunning** : Options: `"stop/start"`, `"stop"` (the default), or `"restart"`  
+2.  **launch-config.ifDebugSessionRunning** : Options: `"stop/start"`, `"stop"` (the default), `"restart"` or `start` 
 
-This setting controls how to handle a currently running debug session when triggering the keybinding you have set up for that launch configuration.   See more at [session options](options.md).   
+This setting controls how to handle a currently running debug session when triggering the same keybinding again for that launch configuration.   See more at **[session options](options.md)**.   
 
 
 <br />
@@ -177,7 +176,7 @@ Choose whatever different keybindings you wish.  Here are example keybindings (i
 
   You will get intellisense in your `keybindings.json` file for the `launches.showAllLaunchConfigs` command and upon typing the `"launches."` part of the command.  Then you will see a list of your available completions from your `settings.json`, such as `RunAsArray` and `RunCompound`.
 
-  * Note: see [session options](options.md) for more on using args in a keybinding
+  * Note: see **[session options](options.md)** for more on using args in a keybinding.
 
 
 <!-- ![Intellisense for Keybindings.json](images/keybindingsIntellisense.gif) -->
@@ -203,7 +202,24 @@ Choose whatever different keybindings you wish.  Here are example keybindings (i
 
   The browser will not successfully restart the **second time** - **use the `stop/start` option instead** when launching browsers.
 
-2. For some reason, when you start multiple debug sessions and switch between them with the debug toolbar, vscode will not always show the arrow for `Continue` but stay with `Pause` - you can get it to show the `Continue` arrow by clicking on the Debug Call Stack session (the top entry for each debug session with the *bug* icon).  
+2. Similar to Issue 1, the `restart` option does not work when restarting a compound configuration from your `launch.json` file(s).  From the `launch.json` example above:
+
+```jsonc
+  "compounds": [
+    {
+      "name": "Launch file and start chrome",
+      "configurations": ["Launch File1", "Launch File2"],
+      "preLaunchTask": "Start server",
+      "stopAll": true
+    }
+  ],
+  ```
+
+  When vscode starts this the first time, each debug session has a separate name and `id`, like `Launch File1`, but **no compound name or compopund id**, here the name would be `Launch file and start chrome`.  This is a problem because the `workbench.action.debug.restart` requires a session.id to know which debugging session to restart.  But there is no session.id that represents the compound configuration as a whole.
+
+  So this extension will simply stop and start the compound configuration, but not "restart" it (in some situations there is a difference).  `stop/start` works as an option; the `restart` option will do the same thing as `stop/start`.  
+
+3. For some reason, when you start multiple debug sessions and switch between them with the debug toolbar, vscode will not always show the arrow for `Continue` but stay with `Pause` - you can get it to show the `Continue` arrow by clicking on the Debug Call Stack session (the top entry for each debug session with the *bug* icon).  This seems to be related to this [issue](https://github.com/microsoft/vscode/issues/114914) and appears to be resolved in the Insiders' Build v1.54.
 
 <br/>
 
@@ -212,9 +228,9 @@ Choose whatever different keybindings you wish.  Here are example keybindings (i
 <br/><br/>
   
 
-3.  In a multi-root workspace you can create launch configurations and compounds in a `*.code-workspace` file.  This extension is able to retrieve those but **cannot** scope a debugging session to that file.  Thus launch configurations in a `*.code-workspace` can not be used with this extension.  `vscode.debug.startDebugging(workspaceFolder|undefined, name|Configuration)` needs to be scoped to a workspaceFolder.
+4.  In a multi-root workspace you can create launch configurations and compounds in a `*.code-workspace` file.  This extension is able to retrieve those but **cannot** scope a debugging session to that file.  Thus launch configurations in a `*.code-workspace` can not be used with this extension.  `vscode.debug.startDebugging(workspaceFolder|undefined, name|Configuration)` needs to be scoped to a workspaceFolder.
 
-4.  There is an unusual bug in vscode that pertains only to multi-root workspaces where you have at least two `launch.json` files with identically-named configurations that are used in a compound configuration.  So if you have this in *projectA's* `launch.json`:
+5.  There is an unusual bug in vscode that pertains only to multi-root workspaces where you have at least two `launch.json` files with identically-named configurations that are used in a compound configuration.  So if you have this in *projectA's* `launch.json`:
 
 ```jsonc
 
@@ -247,8 +263,8 @@ Of course, you shouldn't have a compound config that lists a configuration that 
 [&emsp; ] - Explore support for task arguments.  
 [&emsp; ] - Explore generating a command directly from keybindings.  
 [&emsp; ] - Provide intellisense for `args` in `keybindings.json`.  
-[&emsp; ] - Explore whether compound configuration handling can be stream-lined.   
-[&emsp; ] - Explore whether other compound arguments like `prelaunchTask` and `presentation` can be retrieved on restarts.
+[ X ] - Explore whether compound configuration handling can be stream-lined.   
+[ X ] - Explore whether other compound arguments like `prelaunchTask` and `presentation` can be retrieved on restarts.
 
 
 -------------------------
@@ -289,7 +305,7 @@ For debugging [DJ4ddi: issue 1](https://github.com/ArturoDent/launch-config/issu
 
 * 0.6.0 &emsp; Fixed so intellisense is only within the 'launches' setting, not triggered in other unrelated settings. 
 
-* 0.7.0 &emsp; Added `launches.ifDebugSessionRunning` setting to stop, restart or stop/start a running debug session.  
+* 0.7.0 &emsp; Added `launch-config.ifDebugSessionRunning` setting to stop, restart or stop/start a running debug session.  
 &emsp;&emsp; &emsp; Added support for an argument in keybindings for individual debug session control.  
 &emsp;&emsp; &emsp; Added more support for settings with no workspaceFolder name.  
 &emsp;&emsp; &emsp; Fixed using keybinding args for compound configurations.

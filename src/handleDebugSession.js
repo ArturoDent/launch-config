@@ -86,15 +86,45 @@ exports.isMatchingDebugSession = function (debugSessions, name) {
         matchSession = session;
     }
   })
-
   return { match: match, session: matchSession };
 }
 
+
+/**
+ * @description - is there a vscode.DebugSession that has the same launch configuration.name and same workspaceFolder
+ * @description - in the Set of debugSessions as one of the compound config names
+ *
+ * @param {Set<vscode.DebugSession>} debugSessions
+ * @param {string[] | null} compoundArray - ["First Debugger (Test Bed)", "Second Debugger (Test Bed")]
+ * @returns {Array<vscode.DebugSession> | null}
+ */
+exports.isMatchingCompoundDebugSessions = function (debugSessions, compoundArray) {
+
+  // name = "Start 2 node debuggers (Test Bed)" <== a compound
+
+  /** @type { Array<vscode.DebugSession> }*/
+  let matchSessions = [];
+
+  compoundArray?.forEach(name => {
+
+    let setting = utilities.parseConfigurationName(name);
+
+    debugSessions.forEach(session => {
+
+      if (session.name.replace(/(.*):.*$/m, '$1') === setting.config
+        && (!setting.folder || setting.folder === session.workspaceFolder?.name)) {
+        matchSessions.push(session);
+      }
+    });
+  });
+
+  return matchSessions;
+}
 
 /**
  * @description - get the value of the "launches.ifDebugSessionRunning" setting
  * @returns {string | undefined} - "stop" or "stop/start" or "restart"
  */
 exports.getStopStartSetting = function () {
-  return vscode.workspace.getConfiguration().get("launches.ifDebugSessionRunning");
+  return vscode.workspace.getConfiguration().get("launch-config.ifDebugSessionRunning");
 }

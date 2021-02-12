@@ -1,5 +1,4 @@
 const vscode = require('vscode');
-// const { getLaunchConfigNameArray } = require('./completionProviders');
 const handleDebugSession = require('./handleDebugSession');
 const utilities = require('./utilities');
 
@@ -50,7 +49,6 @@ exports.loadLaunchSettings = function (context, disposables, debugSessions) {
         launchSelectedConfig(launches[name], arg, debugSessions);
       });
     }
-
     context.subscriptions.push(disposable);
     disposables.push(disposable);
   }
@@ -78,32 +76,65 @@ async function launchArrayOfConfigs (nameArray, arg, debugSessions) {
  */
 async function launchSelectedConfig (name, arg, debugSessions) {
 
-  // check if a compound configuration
-  if (debugSessions.size) {
-    const isCompoundConfig = isCompound(name);  // returns an array of the configs or null
-    if (isCompoundConfig) {
-      launchArrayOfConfigs(isCompoundConfig, arg, debugSessions);
-      return;
-    }
-  }
+  let handleStart;
+
+  /** @type { string[] }*/
+  let isCompoundConfig = [];
+  
+  let compoundSessionsMatch;
+  let runningSession;
 
   if (debugSessions.size) {
-    // if already running, check setting: launches.ifDebugSessionRunning and decide how to handle
-    const runningSession = handleDebugSession.isMatchingDebugSession(debugSessions, name);
+    if (!Array.isArray(arg) && arg) handleStart = arg;                  // if arg is an array it was from a task arg
+    else handleStart = handleDebugSession.getStopStartSetting(); // will change if task args are introduced
 
-    if (runningSession.match) {
-      let handleStart;
-      if (!Array.isArray(arg)) handleStart = arg;
-      else handleStart = handleDebugSession.getStopStartSetting();
+    isCompoundConfig = isCompound(name);
+    if (isCompoundConfig.length) 
+      compoundSessionsMatch = handleDebugSession.isMatchingCompoundDebugSessions(debugSessions, isCompoundConfig);
+    else
+      runningSession = handleDebugSession.isMatchingDebugSession(debugSessions, name);
+  }
 
-      if (runningSession.session) {
-        if (handleStart === "restart") handleDebugSession.restart(runningSession.session);
-        else if (handleStart === "stop/start") handleDebugSession.stopStart(runningSession.session, name);
-        else handleDebugSession.stop(runningSession.session);  // handleStart === "stop"
-      }
-      return;
+              // @ts-ignore
+              // a compound config and there is a already running matching session
+  if (compoundSessionsMatch?.length) {
+
+    if (handleStart === "start") {      
+      await startLaunch(name);
+    }
+                 // no other way to handle restarts of a compound configuration unfortunately
+    else if (handleStart === "stop/start" || handleStart === "restart") {
+      compoundSessionsMatch.forEach(runningSession => {
+        handleDebugSession.stop(runningSession);
+      });
+
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      await startLaunch(name);
+    }
+    // else  (handleStart === "stop") {
+    else  {     // so "stop" is effectively the default
+      compoundSessionsMatch.forEach(runningSession => {
+        handleDebugSession.stop(runningSession);
+      });
     }
   }
+              // not a compound config but there is a already running matching session
+  else if (runningSession?.match && runningSession.session) {
+      if (handleStart === "start") startLaunch(name);
+      else if (handleStart === "restart") handleDebugSession.restart(runningSession.session);
+      else if (handleStart === "stop/start") handleDebugSession.stopStart(runningSession.session, name);
+      else handleDebugSession.stop(runningSession.session);  // handleStart === "stop", so the default
+  }
+
+  else await startLaunch(name);
+};
+
+
+/**
+ * @description - startDebugging the launch name
+ * @param {string} name 
+ */
+async function startLaunch(name)  {
 
   // name = "Launch Build.js (Project A Folder)"
   // name = "Launch Build.js"
@@ -112,26 +143,21 @@ async function launchSelectedConfig (name, arg, debugSessions) {
 
   if (setting.folder === 'code-workspace') vscode.debug.startDebugging(undefined, setting.config);
   else {
-    // check if folderName is empty, if so use the  workSpaceFolder of the active editor
 
+    // check if folderName is empty, if so use the  workSpaceFolder of the active editor
     let workspace = setting.folder
       ? vscode.workspace.workspaceFolders?.find(ws => ws.name === setting.folder)
       : utilities.getActiveWorkspaceFolder();
 
-    // let workspace;
-    // if (setting.folder && vscode.workspace.workspaceFolders)
-    //   workspace = vscode.workspace.workspaceFolders.find(ws => ws.name === setting.folder);
-    // else workspace = utilities.getActiveWorkspaceFolder();
-
     await vscode.debug.startDebugging(workspace, setting.config);
-    // vscode.commands.executeCommand('workbench.debug.action.focusCallStackView');
+    vscode.commands.executeCommand('workbench.debug.action.focusCallStackView');  // remove when v1.54 released
   }
-};
+}
 
 /**
  * @description - is the name configuration a compound configuration
  * @param {string} name 
- * @returns { string[] | null}
+ * @returns {string[]}
  */
 function isCompound(name) {
 
@@ -147,14 +173,7 @@ function isCompound(name) {
   // ]
 
   let parsedName = utilities.parseConfigurationName(name);
-
   let workSpaceFolders = vscode.workspace.workspaceFolders;
-
-  /**
-   * @typedef  { Object } match
-   * @property { string } name
-   * @property { Array<string> } configurations
-  */
   let match;
 
   if (workSpaceFolders) {
@@ -167,24 +186,21 @@ function isCompound(name) {
 
         // check for a compound without a workspaceFolder name
         if (config.name === parsedName.config && (
-          !parsedName.folder || name === parsedName.fullName))      // overkill really 
+          !parsedName.folder || name === parsedName.fullName))      // overkill?
           match = config;
       });
     })
   }
 
+  // "Start2DebuggersWS": ["First Debugger (Test Bed)", "Second Debugger (Test Bed)"],
+
+  if (match) {
   // @ts-ignore
-  if (match) return match.configurations;
-  else return null;
-
-  // return match;
-  // return compoundArray;
-
-    // compoundArray.forEach(( /** @type {{ name: string | any[]; }} */ compound) => {
-      
-    // });
-
+    return match.configurations.map(name => `${name}  (${parsedName.folder})`);
+  }
+  else return [];
 }
 
 exports.launchSelectedConfig = launchSelectedConfig;
 exports.launchArrayOfConfigs = launchArrayOfConfigs;
+exports.isCompound = isCompound;
