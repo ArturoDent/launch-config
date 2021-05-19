@@ -3,7 +3,7 @@ const utilities = require('./utilities');
 
 
 /**
- * @description - register a CompletionItemProvider for keybindings.json
+ * register a CompletionItemProvider for keybindings.json
  * @param {vscode.ExtensionContext} context
  */
 exports.makeKeybindingsCompletionProvider = function(context) {
@@ -25,17 +25,19 @@ exports.makeKeybindingsCompletionProvider = function(context) {
 
           const prevLine = document.lineAt(position.line - 1).text;
 
-          let match = 'command';  // default
+          let match = 'command';  // default   WHY HERE ??
 
-          if (!linePrefix.endsWith('"launches.') && linePrefix.search(/"args":\s*"$/m) === -1) {
+          // if (!linePrefix.endsWith('"launches.') && linePrefix.search(/"args":\s*"$/m) === -1) {
+          if (!linePrefix.endsWith('"launches.') && linePrefix.search(/"args"\s*:\s*"$/m) === -1) {
             return undefined;
           }
 
           //keybinding "arg" completion
-          if (prevLine.search(/"command": "launches\./) === -1) return undefined;
-          else match = 'arg';
+          // if (prevLine.search(/"command": "launches\./) === -1) return undefined;
+          if (prevLine.search(/"command"\s*:\s*"launches\./) === -1) return undefined;
+          else match = 'args';
 
-          if (match === 'arg') return [
+          if (match === 'args') return [
             makeCompletionItem('start', position),
             makeCompletionItem('stop', position),
             makeCompletionItem('stop/start', position),
@@ -69,7 +71,7 @@ exports.makeKeybindingsCompletionProvider = function(context) {
 
 
 /**
- * @description - register a CompletionItemProvider for settings.json from launch/compound configs
+ * register a CompletionItemProvider for settings.json from launch/compound configs
  * @param {vscode.ExtensionContext} context
  */
 exports.makeSettingsCompletionProvider = function(context) {
@@ -138,7 +140,7 @@ exports.makeSettingsCompletionProvider = function(context) {
 }
 
 /**
- * @description - build an array of all config/compound launch names
+ * build an array of all config/compound launch names
  *
  * @param {readonly vscode.WorkspaceFolder[] | undefined} workSpaceFolders - an array
  * @returns {String[]} nameArray
@@ -172,7 +174,7 @@ function getLaunchConfigNameArray (workSpaceFolders) {
 
 
 /**
- * @description - from a string input make a CompletionItemKind.Text
+ * from a string input make a CompletionItemKind.Text
  *
  * @param {string} key
  * @param {vscode.Position} position

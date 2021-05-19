@@ -61,7 +61,7 @@ function activate(context) {
     let alreadyStored = false;
     // if configName and workspaceFolder already in Set, don't add
     debugSessions.forEach(storedSession => {
-      if (storedSession.name === session.name.replace(/(.*):.*$/m, '$1') &&          
+      if (storedSession.name === session.name.replace(/(.*):.*$/m, '$1') &&
           storedSession.workspaceFolder.name === session.workspaceFolder?.name)
 
               alreadyStored = true;
@@ -74,12 +74,16 @@ function activate(context) {
     debugSessions.delete(session);
   }));
 
-  context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(() => {
-    for (let disposable of disposables) {
-        disposable.dispose()
-    }
-    // reload
-    launch.loadLaunchSettings(context, disposables, debugSessions);
+  context.subscriptions.push(vscode.workspace.onDidChangeConfiguration((event) => {
+
+		if (event.affectsConfiguration("launches")) {
+
+			for (let disposable of disposables) {
+				disposable.dispose();
+			}
+			// reload
+			launch.loadLaunchSettings(context, disposables, debugSessions);
+		}
   }));
 
   context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => {

@@ -1,10 +1,21 @@
 # Launch Configs
 
-
  This vscode extension allows you to create settings to launch any number of your `launch.json` configurations or compound configurations via separate keybindings.  These launch configs can be in any root folder in a multi-root workspace.  And a launch config from one root folder can be triggered while in a file from a different root folder.  And you can create arrays of launch configs to run with a single keybinding.</br></br>
 
 [From [startDebugging()](https://code.visualstudio.com/api/references/vscode-api#debug)  documentation.] ::  
 > The named configurations are looked up in `.vscode/launch.json` found in the given folder. Before debugging starts, all unsaved files are saved and the launch configurations are brought up-to-date. Folder specific variables used in the configuration (e.g. `${workspaceFolder}`) are resolved against the given folder.   
+
+The above caution has been modified by a later update to vscode (v1.54).  Now you can explicitly set vscode to *not* save any unsaved files prior to debugging:    
+
+```jsonc
+// Controls what editors to save before starting a debug session.  
+
+// allEditorsInActiveGroup: Save all editors in the active group before starting a debug session.  
+// nonUntitledEditorsInActiveGroup: Save all editors in the active group except untitled ones before starting a debug session.  
+// none: Don't save any editors before starting a debug session.  
+
+"debug.saveBeforeStart": "allEditorsInActiveGroup", 
+```
  
 
 </br>

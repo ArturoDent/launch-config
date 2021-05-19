@@ -4,7 +4,7 @@ const utilities = require('./utilities');
 
 
 /**
- * @description - get 'launches' setting and registerCommands for them
+ * Get 'launches' setting and registerCommands for them
  *
  * @param {vscode.ExtensionContext} context
  * @param {vscode.Disposable[]} disposables
@@ -56,7 +56,7 @@ exports.loadLaunchSettings = function (context, disposables, debugSessions) {
 
 
 /**
- * @description - start debug sessions for the array of the named launch configurations
+ * Start debug sessions for the array of the named launch configurations
  *
  * @param {Array<string>} nameArray - an array of config names to run simultaneously
  * @param {string} arg - the keybinding arg: "stop" or "stop/start" or "restart"
@@ -68,7 +68,7 @@ async function launchArrayOfConfigs (nameArray, arg, debugSessions) {
 
 
 /**
- * @description - start a debug session of the named launch configuration
+ * Start a debug session of the named launch configuration
  *
  * @param {string} name - the 'name' key of one launch configuration/compound
  * @param {string} arg - the keybinding arg: "stop" or "stop/start" or "restart"
@@ -80,7 +80,7 @@ async function launchSelectedConfig (name, arg, debugSessions) {
 
   /** @type { string[] }*/
   let isCompoundConfig = [];
-  
+
   let compoundSessionsMatch;
   let runningSession;
 
@@ -89,7 +89,7 @@ async function launchSelectedConfig (name, arg, debugSessions) {
     else handleStart = handleDebugSession.getStopStartSetting(); // will change if task args are introduced
 
     isCompoundConfig = isCompound(name);
-    if (isCompoundConfig.length) 
+    if (isCompoundConfig.length)
       compoundSessionsMatch = handleDebugSession.isMatchingCompoundDebugSessions(debugSessions, isCompoundConfig);
     else
       runningSession = handleDebugSession.isMatchingDebugSession(debugSessions, name);
@@ -99,7 +99,7 @@ async function launchSelectedConfig (name, arg, debugSessions) {
               // a compound config and there is a already running matching session
   if (compoundSessionsMatch?.length) {
 
-    if (handleStart === "start") {      
+    if (handleStart === "start") {
       await startLaunch(name);
     }
                  // no other way to handle restarts of a compound configuration unfortunately
@@ -131,8 +131,8 @@ async function launchSelectedConfig (name, arg, debugSessions) {
 
 
 /**
- * @description - startDebugging the launch name
- * @param {string} name 
+ * startDebugging the launch name
+ * @param {string} name
  */
 async function startLaunch(name)  {
 
@@ -154,9 +154,11 @@ async function startLaunch(name)  {
   }
 }
 
+
+
 /**
- * @description - is the name configuration a compound configuration
- * @param {string} name 
+ * The name configuration a compound configuration
+ * @param {string} name
  * @returns {string[]}
  */
 function isCompound(name) {

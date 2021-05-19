@@ -1,7 +1,7 @@
 const vscode = require('vscode');
 
 /**
- * @description - if multiple WorkSpaceFolders in the WorkSpace
+ * If multiple WorkSpaceFolders in the WorkSpace
  * @returns {vscode.WorkspaceFolder | undefined} - the WorkSpaceFolder of the currently active file
  */
 exports.getActiveWorkspaceFolder  = function()  {
@@ -14,7 +14,7 @@ exports.getActiveWorkspaceFolder  = function()  {
 };
 
 /**
- * @description - regex parse the configuration name into its components
+ * Regex parse the configuration name into its components
  *
  * @param {string} name - launch configuration.name + (workspaceFolder)
  *
@@ -34,6 +34,8 @@ exports.parseConfigurationName = function (name) {
 
   let match = name.match(regex);
 
+	const limit = true ?? false;
+
   if  (match?.groups) {
     return {
       fullName: match[0],
@@ -48,3 +50,32 @@ exports.parseConfigurationName = function (name) {
       config: ''
     };
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
