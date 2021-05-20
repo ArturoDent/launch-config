@@ -1,11 +1,11 @@
-# Launch Configs
+# Launch Configs  
 
- This vscode extension allows you to create settings to launch any number of your `launch.json` configurations or compound configurations via separate keybindings.  These launch configs can be in any root folder in a multi-root workspace.  And a launch config from one root folder can be triggered while in a file from a different root folder.  And you can create arrays of launch configs to run with a single keybinding.</br></br>
+This vscode extension allows you to create settings to launch any number of your `launch.json` configurations or compound configurations via separate keybindings.  These launch configs can be in any root folder in a multi-root workspace.  And a launch config from one root folder can be triggered while in a file from a different root folder.  And you can create arrays of launch configs to run with a single keybinding.</br></br>
 
 [From [startDebugging()](https://code.visualstudio.com/api/references/vscode-api#debug)  documentation.] ::  
 > The named configurations are looked up in `.vscode/launch.json` found in the given folder. Before debugging starts, all unsaved files are saved and the launch configurations are brought up-to-date. Folder specific variables used in the configuration (e.g. `${workspaceFolder}`) are resolved against the given folder.   
 
-The above caution has been modified by a later update to vscode (v1.54).  Now you can explicitly set vscode to *not* save any unsaved files prior to debugging:    
+The above caution has been modified by a later update to vscode (v1.54).  Now you can explicitly set vscode to **not** save any unsaved files prior to debugging:    
 
 ```jsonc
 // Controls what editors to save before starting a debug session.  
@@ -20,7 +20,7 @@ The above caution has been modified by a later update to vscode (v1.54).  Now yo
 
 </br>
 
-So be careful, if you use this extension to start a launch configuration from a workspace folder different than that of the **active editor**, note that vscode's built-in folder-specific variables, like  `${workspaceFolder}`, will be resolved to the folder that you are calling into, **but** variables like `${file}` in that same launch configuration will be resolved to the active text editor at the time of triggering the command - which may not even  be in that same workspaceFolder.  This may not be what you expect.
+If you use this extension to start a launch configuration from a workspace folder different than that of the **active editor**, note that vscode's built-in folder-specific variables, like  `${workspaceFolder}`, will be resolved to the folder that you are calling into, **but** variables like `${file}` in that same launch configuration will be resolved to the active text editor at the time of triggering the command - which may not even  be in that same workspaceFolder.  This may not be what you expect.
 
 </br>
 
@@ -40,7 +40,7 @@ For more on this new functionality, see **[session options](options.md)**.
     "RunNodeCurrentFileB": "Launch File (Project B Folder)"
   }
 ``` 
- In keybindings.json or added from the Keyboard Shortcuts UI: 
+In keybindings.json or added from the Keyboard Shortcuts UI: 
 ```jsonc
   {
     "key": "alt+g",               <== whatever keybinding you wish    
@@ -72,7 +72,7 @@ Trigger from a Project A or Project B editor:
     "command": "launches.RunLaunchArray"
   }
   ```
-  * Open a QuickPick panel of all available launch configurations.  Select and run one or many from this list.
+* Open a QuickPick panel of all available launch configurations.  Select and run one or many from this list.
 
 -----------------------------------------------------------------------------------------------
 
@@ -185,9 +185,9 @@ Choose whatever different keybindings you wish.  Here are example keybindings (i
   },
   ```
 
-  You will get intellisense in your `keybindings.json` file for the `launches.showAllLaunchConfigs` command and upon typing the `"launches."` part of the command.  Then you will see a list of your available completions from your `settings.json`, such as `RunAsArray` and `RunCompound`.
+You will get intellisense in your `keybindings.json` file for the `launches.showAllLaunchConfigs` command and upon typing the `"launches."` part of the command.  Then you will see a list of your available completions from your `settings.json`, such as `RunAsArray` and `RunCompound`.
 
-  * Note: see **[session options](options.md)** for more on using args in a keybinding.
+* Note: see **[session options](options.md)** for more on using args in a keybinding.
 
 
 <!-- ![Intellisense for Keybindings.json](images/keybindingsIntellisense.gif) -->
@@ -209,9 +209,9 @@ Choose whatever different keybindings you wish.  Here are example keybindings (i
     "url": "http://localhost:8081",
     "file": "${workspaceFolder}/build.html"
   }
-  ```
+```
 
-  The browser will not successfully restart the **second time** - **use the `stop/start` option instead** when launching browsers.
+The browser will not successfully restart the **second time** - **use the `stop/start` option instead** when launching browsers.
 
 2. Similar to Issue 1, the `restart` option does not work when restarting a compound configuration from your `launch.json` file(s).  From the `launch.json` example above:
 
@@ -224,11 +224,11 @@ Choose whatever different keybindings you wish.  Here are example keybindings (i
       "stopAll": true
     }
   ],
-  ```
+```
 
-  When vscode starts this the first time, each debug session has a separate name and `id`, like `Launch File1`, but **no compound name or compopund id**, here the name would be `Launch file and start chrome`.  This is a problem because the `workbench.action.debug.restart` requires a session.id to know which debugging session to restart.  But there is no session.id that represents the compound configuration as a whole.
+When vscode starts this the first time, each debug session has a separate name and `id`, like `Launch File1`, but **no compound name or compopund id**, here the name would be `Launch file and start chrome`.  This is a problem because the `workbench.action.debug.restart` requires a session.id to know which debugging session to restart.  But there is no session.id that represents the compound configuration as a whole.
 
-  So this extension will simply stop and start the compound configuration, but not "restart" it (in some situations there is a difference).  `stop/start` works as an option; the `restart` option will do the same thing as `stop/start`.  
+So this extension will simply stop and start the compound configuration, but not "restart" it (in some situations there is a difference).  `stop/start` works as an option; the `restart` option will do the same thing as `stop/start`.  
 
 3. For some reason, when you start multiple debug sessions and switch between them with the debug toolbar, vscode will not always show the arrow for `Continue` but stay with `Pause` - you can get it to show the `Continue` arrow by clicking on the Debug Call Stack session (the top entry for each debug session with the *bug* icon).  This seems to be related to this [issue](https://github.com/microsoft/vscode/issues/114914) and appears to be resolved in the Insiders' Build v1.54.
 

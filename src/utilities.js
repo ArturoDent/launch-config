@@ -34,8 +34,6 @@ exports.parseConfigurationName = function (name) {
 
   let match = name.match(regex);
 
-	const limit = true ?? false;
-
   if  (match?.groups) {
     return {
       fullName: match[0],

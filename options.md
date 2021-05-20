@@ -48,15 +48,15 @@ But maybe you want some sessions stopped and others restarted, etc. - here is ho
     "command": "launches.File2",
     "arg": "restart"
   }
-  ``` 
+``` 
 
-  Now, when `launches.File1` is running and you <kbd>alt</kbd>+<kbd>g</kbd> again (or whatever your chosen keybinding was), that matching debug session will be stopped.  But, if `launches.File2` was running, re-triggering its keybinding would restart that launch configuration.
+Now, when `launches.File1` is running and you <kbd>alt</kbd>+<kbd>g</kbd> again (or whatever your chosen keybinding was), that matching debug session will be stopped.  But, if `launches.File2` was running, re-triggering its keybinding would restart that launch configuration.
 
-  * The keybinding argument will override the `launch-config.ifDebugSessionRunning` setting.  The keybinding argument is more specific and the the setting is more general.  
+* The keybinding argument will override the `launch-config.ifDebugSessionRunning` setting.  The keybinding argument is more specific and the the setting is more general.  
 
-  *  `stop` is the **default** for the `launch-config.ifDebugSessionRunning` setting - so if you do not have the setting in your `settings.json` file and no argument in the matching keybinding, that debug session will be stopped if you retrigger the same keybinding.
+*  `stop` is the **default** for the `launch-config.ifDebugSessionRunning` setting - so if you do not have the setting in your `settings.json` file and no argument in the matching keybinding, that debug session will be stopped if you retrigger the same keybinding.
 
-  * See the [Known Issues](README.md) for an issue using the `restart` option to restart a browser launch.  
-  * See the [Known Issues](README.md) for an issue using the `restart` option to restart a compound configuration.
+* See the [Known Issues](README.md) for an issue using the `restart` option to restart a browser launch.  
+* See the [Known Issues](README.md) for an issue using the `restart` option to restart a compound configuration.
 
-  <br/>
+<br/>
