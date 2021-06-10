@@ -85,7 +85,7 @@ async function launchSelectedConfig (name, arg, debugSessions) {
   let runningSession;
 
   if (debugSessions.size) {
-    if (!Array.isArray(arg) && arg) handleStart = arg;                  // if arg is an array it was from a task arg
+    if (!Array.isArray(arg) && arg) handleStart = arg;           // if arg is an array it was from a task arg
     else handleStart = handleDebugSession.getStopStartSetting(); // will change if task args are introduced
 
     isCompoundConfig = isCompound(name);
@@ -96,7 +96,7 @@ async function launchSelectedConfig (name, arg, debugSessions) {
   }
 
               // @ts-ignore
-              // a compound config and there is a already running matching session
+              // a compound config and there is an already running matching session
   if (compoundSessionsMatch?.length) {
 
     if (handleStart === "start") {
@@ -150,7 +150,7 @@ async function startLaunch(name)  {
       : utilities.getActiveWorkspaceFolder();
 
     await vscode.debug.startDebugging(workspace, setting.config);
-    vscode.commands.executeCommand('workbench.debug.action.focusCallStackView');  // remove when v1.54 released
+    // vscode.commands.executeCommand('workbench.debug.action.focusCallStackView');  // remove when v1.54 released
   }
 }
 

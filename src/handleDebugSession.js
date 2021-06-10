@@ -39,7 +39,7 @@ exports.stopStart = async function (session, name) {
 
     await vscode.debug.startDebugging(workspace, setting.config);
     // this can probably be removed after v1.54 is released
-    vscode.commands.executeCommand('workbench.debug.action.focusCallStackView');
+    // vscode.commands.executeCommand('workbench.debug.action.focusCallStackView');
   }
 }
 

@@ -21,48 +21,43 @@ exports.makeKeybindingsCompletionProvider = function(context) {
           // get all text until the cursor `position` and check if it ends with `"launches.` or '"args": "'
           const linePrefix = document.lineAt(position).text.substr(0, position.character);
 
-          // (?<="launches\.)[^{]*\n^.*"args": "
-
           const prevLine = document.lineAt(position.line - 1).text;
 
-          let match = 'command';  // default   WHY HERE ??
-
-          // if (!linePrefix.endsWith('"launches.') && linePrefix.search(/"args":\s*"$/m) === -1) {
           if (!linePrefix.endsWith('"launches.') && linePrefix.search(/"args"\s*:\s*"$/m) === -1) {
             return undefined;
           }
 
-          //keybinding "arg" completion
-          // if (prevLine.search(/"command": "launches\./) === -1) return undefined;
-          if (prevLine.search(/"command"\s*:\s*"launches\./) === -1) return undefined;
-          else match = 'args';
+          // keybinding "args" completion
+					if ((linePrefix.search(/"args"\s*:\s*"$/) !== -1) && (prevLine.search(/"command"\s*:\s*"launches\./) !== -1)) {
+						return [
+							makeCompletionItem('start', position),
+							makeCompletionItem('stop', position),
+							makeCompletionItem('stop/start', position),
+							makeCompletionItem('restart', position)
+						];
+					}
 
-          if (match === 'args') return [
-            makeCompletionItem('start', position),
-            makeCompletionItem('stop', position),
-            makeCompletionItem('stop/start', position),
-            makeCompletionItem('restart', position)
-          ];
+          // "command": "launches." completion
+					if (linePrefix.search(/"command": "launches\./) !== -1) {
+						const launches = vscode.workspace.getConfiguration("launches");
+						let completionItemArray = [];
 
-          // "launches." completion
-          const launches = vscode.workspace.getConfiguration("launches");
-          let completionItemArray = [];
+						// look at each 'launches' setting
+						for (const item in launches) {
 
-          // look at each 'launches' setting
-          for (const item in launches) {
-
-            // "RunAsArray": ["Launch File (BuildSACC)", "Launch File (TestMultiRoot)"],
-            if ((typeof launches[item] !== 'string') && (!Array.isArray(launches[item]))) {
-                continue;
-            }
-            else {
-              completionItemArray.push(makeCompletionItem(item, position));
-            }
-          }
-          return completionItemArray;
+							// "RunAsArray": ["Launch File (BuildSACC)", "Launch File (TestMultiRoot)"],
+							if ((typeof launches[item] !== 'string') && (!Array.isArray(launches[item]))) {
+								continue;
+							}
+							else {
+								completionItemArray.push(makeCompletionItem(item, position));
+							}
+						}
+						return completionItemArray;
+					}
+					else return undefined;
         }
       },
-      // '.'       // trigger intellisense/completion
       '.', '"'       // trigger intellisense/completion
     );
 
@@ -97,7 +92,8 @@ exports.makeSettingsCompletionProvider = function(context) {
 
         // check that cursor position is within "launches": { | }, i.e., within our "launches" setting
 
-        let fullText = document.getText();
+				let fullText = document.getText();
+																												   // no }'s within the launches setting!!
         regex = /(?<launches>"launches"\s*:\s*{[^}]*?})/;  // our 'launches' setting
         let launchMatch = fullText.match(regex);
 
@@ -105,7 +101,6 @@ exports.makeSettingsCompletionProvider = function(context) {
         let startPos;
         let endPos;
 
-        // if (launchMatch && launchMatch.index && launchMatch.groups) {
         if (launchMatch?.index && launchMatch?.groups) {
           startPos = document.positionAt(launchMatch.index);  // "launches" index
           endPos = document.positionAt(launchMatch.index + launchMatch.groups.launches.length);
@@ -195,5 +190,4 @@ function makeCompletionItem(key, position) {
 
   return item;
 }
-
 exports.getLaunchConfigNameArray = getLaunchConfigNameArray;
