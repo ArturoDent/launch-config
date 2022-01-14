@@ -1,4 +1,5 @@
 const vscode = require('vscode');
+const launch = require('./launch');
 const utilities = require('./utilities');
 
 
@@ -23,24 +24,8 @@ exports.stopStart = async function (session, name) {
 
   // Give it a moment to stop fully
   await new Promise(resolve => setTimeout(resolve, 1000));
-
-  let setting = utilities.parseConfigurationName(name);
-
-  if (setting.folder === 'code-workspace') vscode.debug.startDebugging(undefined, setting.config);
-  else {
-
-    // check if folderName is empty, if so use the  workSpaceFolder of the active editor
-
-    let workspace;
-
-    if (setting.folder && vscode.workspace.workspaceFolders)
-      workspace = vscode.workspace.workspaceFolders.find(ws => ws.name === setting.folder);
-    else workspace = utilities.getActiveWorkspaceFolder();
-
-    await vscode.debug.startDebugging(workspace, setting.config);
-    // this can probably be removed after v1.54 is released
-    // vscode.commands.executeCommand('workbench.debug.action.focusCallStackView');
-  }
+  
+  await launch.startLaunch(name);
 }
 
 
@@ -76,12 +61,12 @@ exports.isMatchingDebugSession = function (debugSessions, name) {
 
   // if (!debugSessions.size) return { match:match, session:matchSession};
 
-  let setting = utilities.parseConfigurationName(name);
+  let config = utilities.parseConfigurationName(name);
 
   debugSessions.forEach(session => {
 
-    if (session.name.replace(/(.*):.*$/m, '$1') === setting.config
-      && (!setting.folder || setting.folder === session.workspaceFolder?.name )) {
+    if (session.name.replace(/(.*):.*$/m, '$1') === config.name
+      && (!config.folder || config.folder === session.workspaceFolder?.name )) {
         match = true;
         matchSession = session;
     }
@@ -107,12 +92,12 @@ exports.isMatchingCompoundDebugSessions = function (debugSessions, compoundArray
 
   compoundArray?.forEach(name => {
 
-    let setting = utilities.parseConfigurationName(name);
+    let config = utilities.parseConfigurationName(name);
 
     debugSessions.forEach(session => {
 
-      if (session.name.replace(/(.*):.*$/m, '$1') === setting.config
-        && (!setting.folder || setting.folder === session.workspaceFolder?.name)) {
+      if (session.name.replace(/(.*):.*$/m, '$1') === config.name
+        && (!config.folder || config.folder === session.workspaceFolder?.name)) {
         matchSessions.push(session);
       }
     });

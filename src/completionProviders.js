@@ -1,7 +1,6 @@
 const vscode = require('vscode');
 const utilities = require('./utilities');
 
-
 /**
  * register a CompletionItemProvider for keybindings.json
  * @param {vscode.ExtensionContext} context
@@ -18,9 +17,10 @@ exports.makeKeybindingsCompletionProvider = function(context) {
               //   "args": "restart"  <== optional
               // },
 
-          // get all text until the cursor `position` and check if it ends with `"launches.` or '"args": "'
-          const linePrefix = document.lineAt(position).text.substr(0, position.character);
+              // TODO: get straight from launch.json or launch setting? 
 
+          // get all text until the cursor `position` and check if it ends with `"launches.` or '"args": "'
+          const linePrefix = document.lineAt(position).text.substring(0, position.character);
           const prevLine = document.lineAt(position.line - 1).text;
 
           if (!linePrefix.endsWith('"launches.') && linePrefix.search(/"args"\s*:\s*"$/m) === -1) {
@@ -38,8 +38,14 @@ exports.makeKeybindingsCompletionProvider = function(context) {
 					}
 
           // "command": "launches." completion
-					if (linePrefix.search(/"command": "launches\./) !== -1) {
+          if (linePrefix.search(/"command": "launches\./) !== -1) {
+            
 						const launches = vscode.workspace.getConfiguration("launches");
+
+            // get launch configs direct from .vscode/launch.json or settings launch
+            // const launchesSettingsArray = vscode.workspace.getConfiguration("launch").get('configurations');
+            // const launchesSettingsCompoundArray = vscode.workspace.getConfiguration("launch").get('compounds');
+
 						let completionItemArray = [];
 
 						// look at each 'launches' setting
@@ -82,7 +88,7 @@ exports.makeSettingsCompletionProvider = function(context) {
             // },
 
         // get all text until the current `position` and check if it reads `:\s*"$` before the cursor
-        const linePrefix = document.lineAt(position).text.substr(0, position.character);
+        const linePrefix = document.lineAt(position).text.substring(0, position.character);
 
         // works in arrays as well
         let regex = /[:,]\s*("|\[")$/g;
@@ -105,7 +111,6 @@ exports.makeSettingsCompletionProvider = function(context) {
           startPos = document.positionAt(launchMatch.index);  // "launches" index
           endPos = document.positionAt(launchMatch.index + launchMatch.groups.launches.length);
 
-
           let launchRange = new vscode.Range(startPos, endPos);
           if (!launchRange.contains(position)) return undefined;  // cursor is not in the 'launches' setting
         }
@@ -118,10 +123,10 @@ exports.makeSettingsCompletionProvider = function(context) {
         let completionItemArray = [];
 
         for (const item in nameArray) {
-          if ((typeof nameArray[item] !== 'string')) {
-              continue;
+          if (typeof nameArray[item] === 'object') {
+            // continue;
           }
-          else {
+          else if (typeof nameArray[item] === 'string') {
             completionItemArray.push(makeCompletionItem(nameArray[item], position));
           }
         }
@@ -138,29 +143,31 @@ exports.makeSettingsCompletionProvider = function(context) {
  * build an array of all config/compound launch names
  *
  * @param {readonly vscode.WorkspaceFolder[] | undefined} workSpaceFolders - an array
- * @returns {String[]} nameArray
+ * @returns {Array<string>} nameArray
  */
 function getLaunchConfigNameArray (workSpaceFolders) {
 
   /** @type { Array<string> }*/
-  let  nameArray = [];
-
+  let nameArray = [];
+  
   if (workSpaceFolders) {
+    
     workSpaceFolders.forEach((workSpace) => {
 
-      let launchConfigs = vscode.workspace.getConfiguration('launch', workSpace.uri);
-
-      let configArray = launchConfigs.get('configurations');
-      configArray = configArray.concat(launchConfigs.get('compounds'));
-
-
-      configArray.forEach(( /** @type {{ name: string | any[]; }} */ config) => {
-        if (typeof config.name === 'string') {
-          // to move the folder name out to the right so they align better, easier to read
-          let padding = (32 - config.name.length > 0) ? 32 - config.name.length : 1;
-          let fill = ' '.padEnd(padding);
-          nameArray.push(`${ config.name }${ fill }(${ workSpace.name })`);
-        }
+      // const launchConfigs = vscode.workspace.getConfiguration('launch', workSpace.uri);
+      const launchConfigs = utilities.getAllConfigurations();
+      // need this now?  TODO
+      // const fromUserSettingsOnly = utilities.fromUserSettingsOnly();  // **only** user settings configs
+      
+      Object.entries(launchConfigs).forEach(value => {
+        // @ts-ignore  noImplicitAny error
+        if (value[0] === 'workspaceValue') value[1].forEach(config  => {
+          return nameArray.push(`${ config.name }  (${ workSpace.name })`);
+        });
+        // @ts-ignore  noImplicitAny error
+        else if (value[0] === 'globalValue') value[1].forEach(config => {
+          return nameArray.push(`${ config.name }  (${ workSpace.name }) [Settings]`);
+        });
       });
     });
   }
@@ -177,17 +184,25 @@ function getLaunchConfigNameArray (workSpaceFolders) {
  */
 function makeCompletionItem(key, position) {
 
-  let item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Text);
+  let item;
+  
+  item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Text);
   item.range = new vscode.Range(position, position);
 
   let setting = utilities.parseConfigurationName(key);
-
   item.sortText = setting.folder;
-
-  // remove spaces added to align folders in completionProvider
-  let stripSpaces = /(\s{2,})(\([^)]+\))$/g;
-  item.insertText = key.replace(stripSpaces, ' $2');
+  
+  if (setting?.setting)
+    item.documentation = new vscode.MarkdownString(`This launch configuration is in the global user settings.`);
+  else 
+    item.documentation = new vscode.MarkdownString(`This launch configuration is in the workspace: **${ setting.folder }**`);
+  
+    // TODO : do something because of [Setting]?
+    // remove spaces added to align folders in completionProvider
+    // let stripSpaces = /(\s{2,})(\([^)]+\))$/g;
+    // item.insertText = key.replace(stripSpaces, ' $2');
 
   return item;
 }
+
 exports.getLaunchConfigNameArray = getLaunchConfigNameArray;

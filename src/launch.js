@@ -18,6 +18,18 @@ exports.loadLaunchSettings = function (context, disposables, debugSessions) {
               //    "RunCompound1": "Launch file and start chrome"
               // },
 
+  // from launch.json or settings but not both
+  // if a .vscode/launch.json then settings 'launch' is not seen, even if 'configurations' is an empty array
+  // makes sense as workspace configs > user configs
+  // a completely empty .vscode/launch.json does not block
+
+  // also workspace settings > user settings
+  // workspace launch.json > workspace settings
+  // workspace settings "launches" > user settings "launches"
+
+  // const launchesSettingsArray = vscode.workspace.getConfiguration("launch").get('configurations');
+  // const launchesSettingsCompoundArray = vscode.workspace.getConfiguration("launch").get('compounds');
+
   const launches = vscode.workspace.getConfiguration("launches");
 
   // look at each 'launches' setting
@@ -136,23 +148,46 @@ async function launchSelectedConfig (name, arg, debugSessions) {
  */
 async function startLaunch(name)  {
 
-  // name = "Launch Build.js (Project A Folder)"
-  // name = "Launch Build.js"
+  // name = "Launch Build.js (Project A)"
+  // name = "Launch Build.js (Project A) [Settings]"
 
-  let setting = utilities.parseConfigurationName(name);
+  let config = utilities.parseConfigurationName(name);
 
-  if (setting.folder === 'code-workspace') vscode.debug.startDebugging(undefined, setting.config);
+  // TODO does this work?  Probably not, get and pass the actual configuration
+  // see [https://github.com/microsoft/vscode/issues/132058] 
+  // (debug.startDebugging() can't find configuration from .code-workspace file)
+  // what are the .inspect values for a .code-workspace configuration?
+  if (config.folder === 'code-workspace') vscode.debug.startDebugging(undefined, config.name);
+    
   else {
 
     // check if folderName is empty, if so use the  workSpaceFolder of the active editor
-    let workspace = setting.folder
-      ? vscode.workspace.workspaceFolders?.find(ws => ws.name === setting.folder)
+    let workspace = config.folder
+      ? vscode.workspace.workspaceFolders?.find(ws => ws.name === config.folder)
       : utilities.getActiveWorkspaceFolder();
+    
+    // if launch configs are in the user settings, must get the actual config to pass as an arg
+    // see [https://github.com/microsoft/vscode/issues/109083]
+    // vscode.debug.startDebugging should support named automatic (dynamic) 
+    //      and global(user settings) debug configurations
+    
+    // Start debugging by using either a named launch or named compound configuration,
+    //   or by directly passing a DebugConfiguration.The named configurations are looked up
+    //     in '.vscode/launch.json' found in the given folder.
+    // But it can't use a compound configuration from a settings file - it can't find the named configs therein
+    // -from https://code.visualstudio.com/api/references/vscode-api#debug
 
-    await vscode.debug.startDebugging(workspace, setting.config);
-    // vscode.commands.executeCommand('workbench.debug.action.focusCallStackView');  // remove when v1.54 released
+    if (config.setting) {
+      // get the matching config from the User Settings.  Compound configs? Disable TODO.
+      const userConfig = utilities.getUserSettingConfiguration(config.name);
+      if (userConfig) await vscode.debug.startDebugging(undefined, userConfig);
+    }
+    
+    else 
+      await vscode.debug.startDebugging(workspace, config.name);
   }
 }
+
 
 
 
@@ -174,6 +209,7 @@ function isCompound(name) {
   //   }
   // ]
 
+  // TODO 
   let parsedName = utilities.parseConfigurationName(name);
   let workSpaceFolders = vscode.workspace.workspaceFolders;
   let match;
@@ -187,7 +223,7 @@ function isCompound(name) {
       compoundArray.forEach(( /** @type {{ name: string | any[]; }} */ config) => {
 
         // check for a compound without a workspaceFolder name
-        if (config.name === parsedName.config && (
+        if (config.name === parsedName.name && (
           !parsedName.folder || name === parsedName.fullName))      // overkill?
           match = config;
       });
@@ -205,4 +241,5 @@ function isCompound(name) {
 
 exports.launchSelectedConfig = launchSelectedConfig;
 exports.launchArrayOfConfigs = launchArrayOfConfigs;
+exports.startLaunch = startLaunch;
 exports.isCompound = isCompound;

@@ -3,14 +3,14 @@
  "displayName": "Launch Configs",
  "description": "Create shortcuts to launch specific debug configurations.",
  "publisher": "ArturoDent",
- "version": "0.8.0",
+ "version": "0.8.1",
  "license": "MIT",
  "repository": {
   "type": "git",
   "url": "https://github.com/ArturoDent/launch-config"
  },
  "engines": {
-  "vscode": "^1.50.0"
+  "vscode": "^1.63.0"
  },
  "categories": [
   "Debuggers"
@@ -25,6 +25,7 @@
   "onCommand:launches.showAllLaunchConfigs"
  ],
  "main": "./src/extension.js",
+ "browser": "./src/extension.js",
  "contributes": {
   "commands": [
    {

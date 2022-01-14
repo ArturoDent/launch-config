@@ -2,6 +2,71 @@
 
 This vscode extension allows you to create settings to launch any number of your `launch.json` configurations or compound configurations via separate keybindings.  These launch configs can be in any root folder in a multi-root workspace.  And a launch config from one root folder can be triggered while in a file from a different root folder.  And you can create arrays of launch configs to run with a single keybinding.  
 
+----------------
+
+## [ Pre-release version notes ] :
+
+> VS Code shows an additional Install Pre-Release Version option in the extension Install drop-down menu for installing the pre-release version. See [Pre-release extensions](https://code.visualstudio.com/updates/v1_63#_pre-release-extensions) for more.  
+
+> If there is a pre-release version of an extension that you have already installed, you can easily switch to it [by clicking on the Extension view of this extension and "Switch to Pre-release Version].  
+
+Previously, this extension could not use launch configurations located in the user `settings.json`.  This is due to this issue: [vscode.debug.startDebugging should support ... global (user settings) debug configurations](https://github.com/microsoft/vscode/issues/109083).  
+
+The pre-release version works around this issue to some extent.  You will get intellisense for launch **configurations** located in a `launch` setting in your user `settings.json` when creating a `launches` entry.  But any **compounds** configurations (from user `settings.json`) will not be shown in the intellisense suggestions (and you will get a warning message) - because, as the above issue points out, vscode is unable to resolve a **compounds** configuration into its constituent configurations.
+
+So if you have this `launch` setting (in user `settings.json`):
+
+```jsonc
+"launch": {
+  "version": "0.2.0",
+  "configurations": [               // configurations
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "User Settings 1",
+      "program": "${file}",
+      "console": "integratedTerminal",
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "User Settings 2",
+      "program": "./new.js",
+      "console": "integratedTerminal",
+    }
+  ],
+  "compounds": [                    // compounds
+    {
+      "name": "User Settings Start 2 node debuggers",
+      "configurations": ["User Settings 1", "User Settings 2"],
+      "stopAll": true,
+    }
+  ]
+},
+```
+
+The `compounds` configuration `name` will not be shown in the intellisense suggestions for this extension's `launches` setting:
+
+```jsonc
+"launches": {
+  "myDebugConfigName": " <intellisense appears here>  " 
+}
+``` 
+
+Do not attempt to use `"User Settings Start 2 node debuggers"` as a value in a `launches` setting if it comes from a `compounds` configuration as it does in the above example.  
+
+What you could do is this instead:
+
+```jsonc
+"launches": {
+  "myDebugConfigName": ["User Settings 1", "User Settings 2"]     // this works
+}
+``` 
+
+but note that any additional args that a `compounds` configuration can use, like `preLaunchTask`, `stopAll` and `presentation` would not be used.  If you wanted those args you would have to put `preLaunchTask` and/or `presentation` into one of the `configurations` (`stopAll` cannot be put into a launch `configurations` entry unfortunately).
+
+--------------------
+
 <br>
 
 [From [startDebugging()](https://code.visualstudio.com/api/references/vscode-api#debug)  documentation.] :   
@@ -239,11 +304,11 @@ The browser will not successfully restart the **second time** - **use the `stop/
   ],
 ```
 
-When vscode starts this the first time, each debug session has a separate name and `id`, like `Launch File1`, but **no compound name or compopund id**, here the name would be `Launch file and start chrome`.  This is a problem because the `workbench.action.debug.restart` requires a session.id to know which debugging session to restart.  But there is no session.id that represents the compound configuration as a whole.  
+When vscode starts this the first time, each debug session has a separate name and `id`, like `Launch File1`, but **no compound name or compound id**, here the name would be `Launch file and start chrome`.  This is a problem because the `workbench.action.debug.restart` requires a session.id to know which debugging session to restart.  But there is no session.id that represents the compound configuration as a whole.  
 
 So this extension will simply stop and start the compound configuration, but not "restart" it (in some situations there is a difference).  `stop/start` works as an option; the `restart` option will do the same thing as `stop/start`.   
 
-4.  In a multi-root workspace you can create launch configurations and compounds in a `*.code-workspace` file.  This extension is able to retrieve those but **cannot** scope a debugging session to that file.  Thus launch configurations in a `*.code-workspace` can not be used with this extension.  `vscode.debug.startDebugging(workspaceFolder|undefined, name|Configuration)` needs to be scoped to a workspaceFolder.  
+4.  In a multi-root workspace you can create launch configurations and compounds in a `*.code-workspace` file.  This extension is able to retrieve those but **cannot** scope a debugging session to that file.  Thus launch configurations in a `*.code-workspace` can not be used with this extension.  `vscode.debug.startDebugging(workspaceFolder|undefined, name|Configuration)` needs to be scoped to a workspaceFolder.  See issue: https://github.com/microsoft/vscode/issues/132058.  
 
 5.  There is an unusual bug in vscode that pertains only to multi-root workspaces where you have at least two `launch.json` files with identically-named configurations that are used in a compound configuration.  So if you have this in *projectA's* `launch.json`:  
 

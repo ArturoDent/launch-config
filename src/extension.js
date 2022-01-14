@@ -31,6 +31,7 @@ function activate(context) {
 
     const regex = /^(.+?)\s*(\(.*\))$|^(.*)$/m;
 
+    // TODO - this might not be necessary anymore
     nameArray = nameArray.map(name => {
 
       // @ts-ignore
@@ -40,6 +41,7 @@ function activate(context) {
       return configName.padEnd(padding, ' ') + folderName;
     });
 
+    // nameArray must be a string[]
     return vscode.window.showQuickPick(nameArray, {
       canPickMany: true,
       placeHolder: "Select launch configuration(s) to run"

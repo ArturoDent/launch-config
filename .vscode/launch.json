@@ -25,5 +25,5 @@
 				"--extensionTestsPath=${workspaceFolder}/test/suite/index"
 			]
 		}
-	]
+  ]
 }
