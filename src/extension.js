@@ -4,6 +4,8 @@ const providers = require('./completionProviders');
 
 /** @type { Array<vscode.Disposable> } */
 let disposables = [];
+
+/** @type { Set<vscode.DebugSession> } */
 let debugSessions = new Set();
 
 
@@ -17,11 +19,38 @@ let debugSessions = new Set();
  */
 function activate(context) {
 
+  // -------------------    start-up functions    ---------------------------------------
   launch.loadLaunchSettings(context, disposables, debugSessions);
   providers.makeKeybindingsCompletionProvider(context);
   providers.makeSettingsCompletionProvider(context);
+  
+  // -----------------------  commands  -------------------------------------------------
+  
+  let disposableNext = vscode.commands.registerCommand('launches.focusNextDebugSession', async function () {
+    
+    await vscode.commands.executeCommand('workbench.debug.action.focusCallStackView');
+    await vscode.commands.executeCommand('list.selectAll');
+    await vscode.commands.executeCommand('list.collapseAll');
+    await vscode.commands.executeCommand('list.focusPageDown');
+    await vscode.commands.executeCommand('list.select');
+  });
+  context.subscriptions.push(disposableNext);
+  disposables.push(disposableNext);
+  
+  let disposablePrevious = vscode.commands.registerCommand('launches.focusPreviousDebugSession', async function () {
 
-  let disposable = vscode.commands.registerCommand('launches.showAllLaunchConfigs', async function () {
+    await vscode.commands.executeCommand('workbench.debug.action.focusCallStackView');
+    await vscode.commands.executeCommand('list.selectAll');
+    await vscode.commands.executeCommand('list.collapseAll');
+    await vscode.commands.executeCommand('list.focusPageUp');
+    await vscode.commands.executeCommand('list.select');
+    // await vscode.commands.executeCommand('list.expand');
+  });
+  context.subscriptions.push(disposablePrevious);
+  disposables.push(disposablePrevious);
+  
+  //  --------------  showAllLaunchConfigs  -----------
+  let disposable2 = vscode.commands.registerCommand('launches.showAllLaunchConfigs', async function () {
 
     const workSpaceFolders = vscode.workspace.workspaceFolders;
     let nameArray = providers.getLaunchConfigNameArray(workSpaceFolders);
@@ -54,17 +83,18 @@ function activate(context) {
       }
     });
   });
-  context.subscriptions.push(disposable);
-  disposables.push(disposable);
+  context.subscriptions.push(disposable2);
+  disposables.push(disposable2);
 
-  // **************************************************************************************
+  // -------------------    event listeners    ------------------------------------------
+
 
   context.subscriptions.push(vscode.debug.onDidStartDebugSession((session) => {
     let alreadyStored = false;
     // if configName and workspaceFolder already in Set, don't add
     debugSessions.forEach(storedSession => {
       if (storedSession.name === session.name.replace(/(.*):.*$/m, '$1') &&
-          storedSession.workspaceFolder.name === session.workspaceFolder?.name)
+          storedSession?.workspaceFolder?.name === session.workspaceFolder?.name)
 
               alreadyStored = true;
     })

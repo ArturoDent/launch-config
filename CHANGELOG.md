@@ -15,4 +15,4 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Fixed for any bug fixes.
 - Security in case of vulnerabilities.
 
-[asd](./)
+[asd](src/completionProviders.js)

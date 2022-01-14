@@ -32,6 +32,16 @@
     "command": "launches.showAllLaunchConfigs",
     "title": "Show all launch configurations",
     "category": "Launch Configs"
+   },
+   {
+    "command": "launches.focusNextDebugSession",
+    "title": "Focus the next debug session",
+    "category": "Launch Configs"
+   },
+   {
+    "command": "launches.focusPreviousDebugSession",
+    "title": "Focus the previous debug session",
+    "category": "Launch Configs"
    }
   ],
   "configuration": {
