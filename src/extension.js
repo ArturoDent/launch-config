@@ -21,6 +21,31 @@ function activate(context) {
   providers.makeKeybindingsCompletionProvider(context);
   providers.makeSettingsCompletionProvider(context);
 
+  // -----------------------  commands  -------------------------------------------------
+
+  let disposableNext = vscode.commands.registerCommand('launches.focusNextDebugSession', async function () {
+  
+    await vscode.commands.executeCommand('workbench.debug.action.focusCallStackView');
+    await vscode.commands.executeCommand('list.selectAll');
+    await vscode.commands.executeCommand('list.collapseAll');
+    await vscode.commands.executeCommand('list.focusPageDown');
+    await vscode.commands.executeCommand('list.select');
+  });
+  context.subscriptions.push(disposableNext);
+  disposables.push(disposableNext);
+  
+  let disposablePrevious = vscode.commands.registerCommand('launches.focusPreviousDebugSession', async function () {
+
+    await vscode.commands.executeCommand('workbench.debug.action.focusCallStackView');
+    await vscode.commands.executeCommand('list.selectAll');
+    await vscode.commands.executeCommand('list.collapseAll');
+    await vscode.commands.executeCommand('list.focusPageUp');
+    await vscode.commands.executeCommand('list.select');
+    // await vscode.commands.executeCommand('list.expand');
+  });
+  context.subscriptions.push(disposablePrevious);
+  disposables.push(disposablePrevious);
+
   let disposable = vscode.commands.registerCommand('launches.showAllLaunchConfigs', async function () {
 
     const workSpaceFolders = vscode.workspace.workspaceFolders;
