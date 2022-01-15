@@ -171,11 +171,11 @@ This setting controls how to handle a currently running debug session when trigg
 
 This extension generates commands from settings created by the user. These generated commands will appear in `Keyboard Shortcuts` and keybindings can be assigned there or manually, with intellisense, in `keybindings.json`.  In this example there are four settings from which commands have been generated and two of those have had keybindings associated with them previously.  
 
-<img src="https://github.com/ArturoDent/launch-config/blob/master/images/shortcuts.gif?raw=true" width="1000" height="250" alt="Keybindings shortcuts demo"/>  
+<img src="https://github.com/ArturoDent/launch-config/blob/launchInSettings/images/shortcuts.gif?raw=true" width="1000" height="250" alt="Keybindings shortcuts demo"/>  
 
 1.  This extension also provides one built-in command `launches.showAllLaunchConfigs` which opens a QuickPick panel of all available launch configurations.  From this panel you can select and run one or more configurations.  Note: there is no guarantee that the configs will be run in the order you select them as just an alphabetical list of selections is returned by vscode.  
 
-<img src="https://github.com/ArturoDent/launch-config/blob/master/images/LaunchQuickPick.gif?raw=true" width="1000" height="400" alt="QuickPick demo"/>
+<img src="https://github.com/ArturoDent/launch-config/blob/launchInSettings/images/LaunchQuickPick.gif?raw=true" width="1000" height="400" alt="QuickPick demo"/>
 
 <br><br>
 
