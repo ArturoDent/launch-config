@@ -167,19 +167,46 @@ This setting controls how to handle a currently running debug session when trigg
 
 ## Commands and Keybindings
 
-<br>
+### This extension contributes three commands: 
 
 This extension generates commands from settings created by the user. These generated commands will appear in `Keyboard Shortcuts` and keybindings can be assigned there or manually, with intellisense, in `keybindings.json`.  In this example there are four settings from which commands have been generated and two of those have had keybindings associated with them previously.  
 
 <img src="https://github.com/ArturoDent/launch-config/blob/master/images/shortcuts.gif?raw=true" width="1000" height="250" alt="Keybindings shortcuts demo"/>  
 
-This extension also provides one built-in command `launches.showAllLaunchConfigs` which opens a QuickPick panel of all available launch configurations.  From this panel you can select and run one or more configurations.  Note: there is no guarantee that the configs will be run in the order you select them as just an alphabetical list of selections is returned by vscode.  
+1.  This extension also provides one built-in command `launches.showAllLaunchConfigs` which opens a QuickPick panel of all available launch configurations.  From this panel you can select and run one or more configurations.  Note: there is no guarantee that the configs will be run in the order you select them as just an alphabetical list of selections is returned by vscode.  
 
 <img src="https://github.com/ArturoDent/launch-config/blob/master/images/LaunchQuickPick.gif?raw=true" width="1000" height="400" alt="QuickPick demo"/>
 
 <br><br>
 
-### Keybindings:
+2.  `launches.focusNextDebugSession` : no default keybinding  
+
+`Launch Configs: Focus the next debug session` (<= how it appears in the Command Palette) This command will focus the next debug session in the call stack.  So if you have at least two debug sessions running at the same time you can use this command to focus the next one after the previously focused session.  This is the same as clicking on a session in the call stack view or choosing one from the debug toolbar dropdown or the debug console dropdown.  
+
+3.  `launches.focusPreviousDebugSession` : no default keybinding  
+
+`Launch Configs: Focus the previous debug session`  (<= how it appears in the Command Palette)This command will focus the previous debug session in the call stack.  
+
+> The extension api does not provide a direct way to programmatically focus other debug sessions, so these commands are a little "kludgy" and use `list` navigation commands to do so.  This is not optimal but I believe the best that can be done at this point.  
+
+You can create your own keybindings for these two commands either through the Keyboard Shortcuts GUI or adding these to your `keybindings.json`:
+
+```jsonc
+{
+  "key": "alt+1",        // whatever keybinding you wish
+  "command": "launches.focusNextDebugSession"
+},
+{
+  "key": "alt+2",        // whatever keybinding you wish
+  "command": "launches.focusPreviousDebugSession"
+}
+```
+
+<br/> 
+
+-------------------- 
+
+### Keybindings for running launch configurations:
 
 Choose whatever different keybindings you wish.  Here are example keybindings (in `keybindings.json`):  
 
@@ -278,7 +305,7 @@ Of course, you shouldn't have a compound config that lists a configuration that 
 [&emsp; ] - Explore generating a command directly from keybindings.  
 [ X ] - Provide intellisense for `args` in `keybindings.json` [v0.7.1].  
 [ X ] - Explore whether compound configuration handling can be stream-lined.   
-[ X ] - Explore whether other compound arguments like `prelaunchTask` and `presentation` can be retrieved on restarts.  
+[ X ] - Explore whether other compound arguments like `prelaunchTask` and `presentation` can be retrieved on restarts.   
 
 
 -------------------------
@@ -326,7 +353,8 @@ For debugging [DJ4ddi: issue 1](https://github.com/ArturoDent/launch-config/issu
 &emsp;&emsp; &emsp; 0.7.1 &emsp; Added intellisense support in keybindings `args`.  
 
 * 0.8.0 &emsp; Stop opening debug view (a fix for debug toolbar focus issues in vscode < v1.54, [issue](https://github.com/microsoft/vscode/issues/114914)).  
-&emsp;&emsp; &emsp; Fixed completions for keybindings commands and args.  
+&emsp;&emsp; &emsp; Fixed completions for keybindings commands and args.   
+&emsp;&emsp; &emsp; 0.8.2 &emsp; Added commands for navigating to the next/previous debug sessions in the call stack.  
 
  
 

@@ -17,6 +17,7 @@ let debugSessions = new Set();
  */
 function activate(context) {
 
+  // -----------------    set up functions   -------------------------------------------
   launch.loadLaunchSettings(context, disposables, debugSessions);
   providers.makeKeybindingsCompletionProvider(context);
   providers.makeSettingsCompletionProvider(context);
@@ -80,7 +81,7 @@ function activate(context) {
   context.subscriptions.push(disposable);
   disposables.push(disposable);
 
-  // **************************************************************************************
+  // --------------------   event listeners   ---------------------------------
 
   context.subscriptions.push(vscode.debug.onDidStartDebugSession((session) => {
     let alreadyStored = false;
