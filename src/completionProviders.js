@@ -19,7 +19,7 @@ exports.makeKeybindingsCompletionProvider = function(context) {
               // },
 
           // get all text until the cursor `position` and check if it ends with `"launches.` or '"args": "'
-          const linePrefix = document.lineAt(position).text.substr(0, position.character);
+          const linePrefix = document.lineAt(position).text.substring(0, position.character);
 
           const prevLine = document.lineAt(position.line - 1).text;
 
@@ -30,10 +30,10 @@ exports.makeKeybindingsCompletionProvider = function(context) {
           // keybinding "args" completion
 					if ((linePrefix.search(/"args"\s*:\s*"$/) !== -1) && (prevLine.search(/"command"\s*:\s*"launches\./) !== -1)) {
 						return [
-							makeCompletionItem('start', position),
-							makeCompletionItem('stop', position),
-							makeCompletionItem('stop/start', position),
-							makeCompletionItem('restart', position)
+							makeCompletionItem('start'),
+							makeCompletionItem('stop'),
+							makeCompletionItem('stop/start'),
+							makeCompletionItem('restart')
 						];
 					}
 
@@ -50,7 +50,7 @@ exports.makeKeybindingsCompletionProvider = function(context) {
 								continue;
 							}
 							else {
-								completionItemArray.push(makeCompletionItem(item, position));
+								completionItemArray.push(makeCompletionItem(item));
 							}
 						}
 						return completionItemArray;
@@ -122,7 +122,7 @@ exports.makeSettingsCompletionProvider = function(context) {
               continue;
           }
           else {
-            completionItemArray.push(makeCompletionItem(nameArray[item], position));
+            completionItemArray.push(makeCompletionItem(nameArray[item]));
           }
         }
         return completionItemArray;
@@ -172,13 +172,15 @@ function getLaunchConfigNameArray (workSpaceFolders) {
  * from a string input make a CompletionItemKind.Text
  *
  * @param {string} key
- * @param {vscode.Position} position
  * @returns {vscode.CompletionItem} - CompletionItemKind.Text
  */
-function makeCompletionItem(key, position) {
+function makeCompletionItem(key) {
 
   let item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Text);
-  item.range = new vscode.Range(position, position);
+  
+  // no longer necessary after 
+  //  https://stackoverflow.com/questions/60001714/custom-extension-for-json-completion-does-not-work-in-double-quotes
+  // item.range = new vscode.Range(position, position);
 
   let setting = utilities.parseConfigurationName(key);
 
