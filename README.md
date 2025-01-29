@@ -99,11 +99,11 @@ Trigger from a Project A or Project B editor:
 The first part of each entry, like `"RunNodeFile"`, can be anything you want (without spaces) - you will use it in the keybinding.  The second part, like `"Launch File"`, is the name of the configuration you would like to run. In `settings.json`:  
 
 ```jsonc
-  "launches": {
+"launches": {
 
-    "RunNodeFile": "Launch File (<some workspaceFolder name>)",  // the folder name will be provided for you
-    "RunCompound1": "Launch file and start chrome"               // but you do not need to have a folder name
-  },
+  "RunNodeFile": "Launch File (<some workspaceFolder name>)",  // the folder name will be provided for you
+  "RunCompound1": "Launch file and start chrome"           // but you do not need to have a folder name
+},
 ```
 
 You will get intellisense in your `settings.json` for the 'name' of all possible launch configurations or compound configurations.  This intellisense will include all configurations and root folder names if you are in a multi-root workspace.  That folder name is used to resolve which `launch.json` to look in for the corresponding configuration (especially important where the same config `name` - like `Launch File` - is used in multiple `launch.json` files).  
@@ -112,7 +112,7 @@ You will get intellisense in your `settings.json` for the 'name' of all possible
 
 <br>  
 
-</br>[The launch config `name`s can be anything - I just happened to use "Launch" at the beginning of all these demo names, that is not necessary.]  
+</br> The launch config `name`s can be anything - I just happened to use "Launch" at the beginning of all these demo names, that is not necessary.  
 
 <br>
 
@@ -170,11 +170,15 @@ This extension generates commands from settings created by the user. These gener
 
 1. This extension also provides one built-in command `launches.showAllLaunchConfigs` which opens a QuickPick panel of all available launch configurations.  From this panel you can select and run one or more configurations.  Note: there is no guarantee that the configs will be run in the order you select them as just an alphabetical list of selections is returned by vscode.  
 
+2. You can "select" any checkbox in the QuickPick by <kbd>Space</kbd> when that configuration is highlighted.  <kbd>Space</kbd> acts as a toggle to check or uncheck the checkbox.  Hit <kbd>Enter</kbd> when you have selected all checkboxes you want to run.  
+
+3. If you only want to run 1 configuration you can highlight that config (arrow up or down, no need to select the checkbox) and hit <kbd>Enter</kbd>.  
+
 <img src="https://github.com/ArturoDent/launch-config/blob/launchInSettings/images/LaunchQuickPick.gif?raw=true" width="1000" height="400" alt="QuickPick demo"/>
 
 <br><br>
 
-2. `launches.focusNextDebugSession` : no default keybinding  
+1. `launches.focusNextDebugSession` : no default keybinding  
 
 `Launch Configs: Focus the next debug session` (<= how it appears in the Command Palette) This command will focus the next debug session in the call stack.  So if you have at least two debug sessions running at the same time you can use this command to focus the next one after the previously focused session.  This is the same as clicking on a session in the call stack view or choosing one from the debug toolbar dropdown or the debug console dropdown.  
 
@@ -286,18 +290,9 @@ Of course, you shouldn't have a compound config that lists a configuration that 
 
 ## TODO
 
-[ X ] - Add support for multiple workspaceFolders, finished in v0.4.  
-[ X ] - Explore running multiple debug sessions from one keybinding [v0.4].  
-[ X ] - Provide intellisense for settings.json, with all `"names"` fron launch.json  [v0.3].  
-[ X ] - Provide intellisense for `launches.` commands in keybindings.json from settings.json keys  [v0.2].  
-[ X ] - Add command and QuickPanel launch config and selections [v0.5].  
-[ X ] - Add support for stopping, restarting or stop/start a previously running debug session  [v0.7.0].  
-[&emsp; ] - Explore retrieval of launch configs from `.code-workspace` files in a multi-root workspace.  
-[&emsp; ] - Explore support for task arguments.  
-[&emsp; ] - Explore generating a command directly from keybindings.  
-[ X ] - Provide intellisense for `args` in `keybindings.json` [v0.7.1].  
-[ X ] - Explore whether compound configuration handling can be stream-lined.  
-[ X ] - Explore whether other compound arguments like `prelaunchTask` and `presentation` can be retrieved on restarts.  
+Explore retrieval of launch configs from `.code-workspace` files in a multi-root workspace.  
+Explore support for task arguments.  
+Explore generating a command directly from keybindings.  
 
 -------------------------
 
@@ -309,8 +304,6 @@ For determining the workspaceFolder of the current file, I used code from [rioj7
 
 For helping getting Intellisense working in keybindings.json for `launches.` commands, see [rioj7's answer](https://stackoverflow.com/a/64593598/836330).  
 
-For debugging [DJ4ddi: issue 1](https://github.com/ArturoDent/launch-config/issues/1) and filing Github issue [Restart specific debugger using command](https://github.com/microsoft/vscode/issues/114467) that enabled the use of `vscode.commands.executeCommand('workbench.action.debug.restart')` with arguments.  
-
 -------------------------
 
 ## Release Notes  
@@ -320,5 +313,7 @@ For earlier release notes see the [CHANGELOG](CHANGELOG.md).
 * 0.8.0 &emsp; Stop opening debug view (a fix for debug toolbar focus issues in vscode < v1.54, [issue](https://github.com/microsoft/vscode/issues/114914)).  
 &emsp;&emsp; &emsp; Fixed completions for keybindings commands and args.  
 &emsp;&emsp; &emsp; 0.8.2 &emsp; Added commands for navigating to the next/previous debug sessions in the call stack.  
+
+* 0.9.0 &emsp; Modify QuickPick listener to allow keyboard trigger (without mouse).  
 
 <br>  

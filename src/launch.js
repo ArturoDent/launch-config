@@ -142,6 +142,7 @@ async function startLaunch(name)  {
   let setting = utilities.parseConfigurationName(name);
 
   if (setting.folder === 'code-workspace') vscode.debug.startDebugging(undefined, setting.config);
+  // else if (setting.folder === 'settings') vscode.debug.startDebugging(vscode.workspace.workspaceFolders[0], setting.config);
   else {
 
     // check if folderName is empty, if so use the  workSpaceFolder of the active editor

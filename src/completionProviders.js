@@ -73,7 +73,7 @@ exports.makeSettingsCompletionProvider = function(context) {
   const settingsCompletionProvider = vscode.languages.registerCompletionItemProvider (
     { pattern: '**/settings.json' },
     {
-      provideCompletionItems(document, position) {
+      async provideCompletionItems(document, position) {
 
             // "launches": {
             //   "RunNodeCurrentFile": "Launch File (workspaceFolderName1)",
@@ -143,23 +143,30 @@ exports.makeSettingsCompletionProvider = function(context) {
 function getLaunchConfigNameArray (workSpaceFolders) {
 
   /** @type { Array<string> }*/
-  let  nameArray = [];
-
+  let nameArray = [];
+  
+  // C: \Users\markm\AppData\Roaming\Code - Insiders\User\settings.json
+  // let settingsConfigs = vscode.workspace.getConfiguration('launch', vscode.Uri.file('C: \Users\markm\AppData\Roaming\Code - Insiders\User\settings.json'));
+  // const values = settingsConfigs.get('configurations');
+  
   if (workSpaceFolders) {
     workSpaceFolders.forEach((workSpace) => {
 
       let launchConfigs = vscode.workspace.getConfiguration('launch', workSpace.uri);
-
+      // const values = vscode.workspace.getConfiguration('launch').inspect('configurations');
+      // if (values?.globalValue.length) nameArray.push(`${values.globalValue[0].name}   (settings)`);
+      
       let configArray = launchConfigs.get('configurations');
       configArray = configArray.concat(launchConfigs.get('compounds'));
 
-
+      // TODO is this necessary - the padding part?
       configArray.forEach(( /** @type {{ name: string | any[]; }} */ config) => {
         if (typeof config.name === 'string') {
           // to move the folder name out to the right so they align better, easier to read
-          let padding = (32 - config.name.length > 0) ? 32 - config.name.length : 1;
-          let fill = ' '.padEnd(padding);
-          nameArray.push(`${ config.name }${ fill }(${ workSpace.name })`);
+          // let padding = (32 - config.name.length > 0) ? 32 - config.name.length : 1;
+          // let fill = ' '.padEnd(padding);
+          // nameArray.push(`${ config.name }${ fill }(${ workSpace.name })`);
+          nameArray.push(`${ config.name }(${ workSpace.name })`);
         }
       });
     });

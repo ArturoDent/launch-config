@@ -50,33 +50,71 @@ function activate(context) {
   let disposable = vscode.commands.registerCommand('launches.showAllLaunchConfigs', async function () {
 
     const workSpaceFolders = vscode.workspace.workspaceFolders;
-    let nameArray = providers.getLaunchConfigNameArray(workSpaceFolders);
+    let nameArray = await providers.getLaunchConfigNameArray(workSpaceFolders);
 
     // add spaces to the nameArray just for the QuickPick
     // unfortunately the QuickPick panel is not rendered in a monospaced font so this has to be just a guess
 
     const regex = /^(.+?)\s*(\(.*\))$|^(.*)$/m;
 
-    nameArray = nameArray.map(name => {
+    // nameArray = nameArray.map(name => {
+    //   // @ts-ignore
+    //   // eslint-disable-next-line no-unused-vars
+    //   let [fullString, configName, folderName] = name.match(regex);
+    //   let padding = (80 - configName.length > 0) ? (80 - configName.length)/1.4 : 1;
+    //   return configName.padEnd(padding, ' ') + folderName;
+    // });
+    
+    let folderName;
+    let configName;
+    
+    const qpItemArray = nameArray.map(name => {
+      
+      [, configName, folderName] = name.match(regex);
+      
+      // nice to use folderName as a separator label but need to get it for launch() methods
 
-      // @ts-ignore
-      // eslint-disable-next-line no-unused-vars
-      let [fullString, configName, folderName] = name.match(regex);
-      let padding = (80 - configName.length > 0) ? (80 - configName.length)/1.4 : 1;
-      return configName.padEnd(padding, ' ') + folderName;
+      const item = {};
+      item.label = configName;
+      item.description = `      ${folderName}`;  // shown in same line as item
+      return item;
     });
+    
+    const qp = vscode.window.createQuickPick();
+    qp.items = qpItemArray;
+    qp.canSelectMany = true;
+    qp.placeholder = "Select launch configuration(s) to run";
+    qp.show();
+    
+    qp.onDidAccept(() => {
+      
+      let selectedItems = (qp.selectedItems.length) ? qp.selectedItems :  qp.activeItems;  // if no selectedItems use activeItems
+      
+      const selectedItemsStrings = selectedItems.map(item => {
+        return `${item.label} ${item.description}`;
+      });
 
-    return vscode.window.showQuickPick(nameArray, {
-      canPickMany: true,
-      placeHolder: "Select launch configuration(s) to run"
-    }).then(items => {
-      if (items) {
-        if (Array.isArray(items)) {
-          launch.launchArrayOfConfigs(items, '', debugSessions);  // if multiple selections: array
+      // or activeItems  - arrow down/up to "select" an item
+      if (selectedItems.length) {  // space to select - like clicking the checkbox
+        if (selectedItems.length > 1) {
+          launch.launchArrayOfConfigs(selectedItemsStrings, '', debugSessions);  // if multiple selections: array
         }
-        else launch.launchSelectedConfig(items, '', debugSessions);  // if only one config selected = string
+        else launch.launchSelectedConfig(selectedItemsStrings[0], '', debugSessions);  // if only one config selected = string
       }
     });
+
+    // return await vscode.window.showQuickPick(nameArray, {
+    //   canPickMany: true,
+    //   placeHolder: "Select launch configuration(s) to run"
+    // }).then(items => {
+    //   if (items) {
+    //     if (Array.isArray(items)) {
+    //       launch.launchArrayOfConfigs(items, '', debugSessions);  // if multiple selections: array
+    //     }
+    //     else launch.launchSelectedConfig(items, '', debugSessions);  // if only one config selected = string
+    //   }
+    // });
+    
   });
   context.subscriptions.push(disposable);
   disposables.push(disposable);
