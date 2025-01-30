@@ -82,7 +82,8 @@ exports.makeSettingsCompletionProvider = function(context) {
             // },
 
         // get all text until the current `position` and check if it reads `:\s*"$` before the cursor
-        const linePrefix = document.lineAt(position).text.substr(0, position.character);
+        // const linePrefix = document.lineAt(position).text.substr(0, position.character);
+        const linePrefix = document.lineAt(position).text.substring(0, position.character);
 
         // works in arrays as well
         let regex = /[:,]\s*("|\[")$/g;
@@ -166,7 +167,7 @@ function getLaunchConfigNameArray (workSpaceFolders) {
           // let padding = (32 - config.name.length > 0) ? 32 - config.name.length : 1;
           // let fill = ' '.padEnd(padding);
           // nameArray.push(`${ config.name }${ fill }(${ workSpace.name })`);
-          nameArray.push(`${ config.name }(${ workSpace.name })`);
+          nameArray.push(`${ config.name }  (${ workSpace.name })`);
         }
       });
     });
