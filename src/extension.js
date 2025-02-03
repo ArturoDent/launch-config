@@ -4,6 +4,8 @@ const providers = require('./completionProviders');
 
 /** @type { Array<vscode.Disposable> } */
 let disposables = [];
+
+/** @type { Set<vscode.DebugSession> } */
 let debugSessions = new Set();
 
 
@@ -55,7 +57,8 @@ function activate(context) {
     // add spaces to the nameArray just for the QuickPick
     // unfortunately the QuickPick panel is not rendered in a monospaced font so this has to be just a guess
 
-    const regex = /^(.+?)\s*(\(.*\))$|^(.*)$/m;
+    // const regex = /^(.+?)\s*(\(.*\))$|^(.*)$/m;
+    const regex = /^(.+?)\s*(\(.*\))\s*(\[Settings\])?$|^(.*)$/m;
 
     // nameArray = nameArray.map(name => {
     //   // @ts-ignore
@@ -67,16 +70,17 @@ function activate(context) {
     
     let folderName;
     let configName;
+    let Settings;
     
     const qpItemArray = nameArray.map(name => {
       
-      [, configName, folderName] = name.match(regex);
+      [, configName, folderName, Settings] = name.match(regex);
       
       // nice to use folderName as a separator label but need to get it for launch() methods
 
       const item = {};
       item.label = configName;
-      item.description = `      ${folderName}`;  // shown in same line as item
+      item.description = Settings ? `   ${folderName}   [Settings]` : `   ${folderName}`;  // shown in same line as item
       return item;
     });
     
@@ -126,7 +130,7 @@ function activate(context) {
     // if configName and workspaceFolder already in Set, don't add
     debugSessions.forEach(storedSession => {
       if (storedSession.name === session.name.replace(/(.*):.*$/m, '$1') &&
-          storedSession.workspaceFolder.name === session.workspaceFolder?.name)
+          storedSession.workspaceFolder?.name === session.workspaceFolder?.name)
 
               alreadyStored = true;
     })

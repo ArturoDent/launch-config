@@ -153,22 +153,33 @@ function getLaunchConfigNameArray (workSpaceFolders) {
   if (workSpaceFolders) {
     workSpaceFolders.forEach((workSpace) => {
 
-      let launchConfigs = vscode.workspace.getConfiguration('launch', workSpace.uri);
-      // const values = vscode.workspace.getConfiguration('launch').inspect('configurations');
-      // if (values?.globalValue.length) nameArray.push(`${values.globalValue[0].name}   (settings)`);
+      // let launchConfigs = vscode.workspace.getConfiguration('launch', workSpace.uri);
+      const launchConfigs = utilities.getAllConfigurations();
+ 
       
-      let configArray = launchConfigs.get('configurations');
-      configArray = configArray.concat(launchConfigs.get('compounds'));
+      // let configArray = launchConfigs.get('configurations');
+      // configArray = configArray.concat(launchConfigs.get('compounds'));
 
       // TODO is this necessary - the padding part?
-      configArray.forEach(( /** @type {{ name: string | any[]; }} */ config) => {
-        if (typeof config.name === 'string') {
-          // to move the folder name out to the right so they align better, easier to read
-          // let padding = (32 - config.name.length > 0) ? 32 - config.name.length : 1;
-          // let fill = ' '.padEnd(padding);
-          // nameArray.push(`${ config.name }${ fill }(${ workSpace.name })`);
-          nameArray.push(`${ config.name }  (${ workSpace.name })`);
-        }
+      // configArray.forEach(( /** @type {{ name: string | any[]; }} */ config) => {
+      //   if (typeof config.name === 'string') {
+      //     // to move the folder name out to the right so they align better, easier to read
+      //     // let padding = (32 - config.name.length > 0) ? 32 - config.name.length : 1;
+      //     // let fill = ' '.padEnd(padding);
+      //     // nameArray.push(`${ config.name }${ fill }(${ workSpace.name })`);
+      //     nameArray.push(`${ config.name }  (${ workSpace.name })`);
+      //   }
+      // });
+      
+      Object.entries(launchConfigs).forEach(value => {
+        // @ts-ignore  noImplicitAny error
+        if (value[0] === 'workspaceValue') value[1].forEach(config => {
+          return nameArray.push(`${config.name}  (${workSpace.name})`);
+        });
+        // @ts-ignore  noImplicitAny error
+        else if (value[0] === 'globalValue') value[1].forEach(config => {
+          return nameArray.push(`${config.name}  (${workSpace.name}) [Settings]`);
+        });
       });
     });
   }
@@ -193,6 +204,12 @@ function makeCompletionItem(key) {
   let setting = utilities.parseConfigurationName(key);
 
   item.sortText = setting.folder;
+  
+  if (setting?.setting)
+    item.documentation = new vscode.MarkdownString(`This launch configuration is in the global user settings.`);
+  else
+    item.documentation = new vscode.MarkdownString(`This launch configuration is in the workspace: **${setting.folder}**`);
+  
 
   // remove spaces added to align folders in completionProvider
   let stripSpaces = /(\s{2,})(\([^)]+\))$/g;
