@@ -1,89 +1,89 @@
 {
- "name": "launch-config",
- "displayName": "Launch Configs",
- "description": "Create shortcuts to launch specific debug configurations.",
- "publisher": "ArturoDent",
- "version": "0.9.0",
- "license": "MIT",
- "repository": {
-  "type": "git",
-  "url": "https://github.com/ArturoDent/launch-config"
- },
- "main": "./src/extension.js",
- "browser": "./src/extension.js",
- "engines": {
-  "vscode": "^1.75.0"
- },
- "categories": [
-  "Debuggers"
- ],
- "keywords": [
-  "launch",
-  "debug",
-  "keybinding"
- ],
- "activationEvents": [
-  "onStartupFinished"
- ],
- "contributes": {
-  "commands": [
-   {
-    "command": "launches.showAllLaunchConfigs",
-    "title": "Show all launch configurations",
-    "category": "Launch Configs"
-   },
-   {
-    "command": "launches.focusNextDebugSession",
-    "title": "Focus the next debug session",
-    "category": "Launch Configs"
-   },
-   {
-    "command": "launches.focusPreviousDebugSession",
-    "title": "Focus the previous debug session",
-    "category": "Launch Configs"
-   }
+  "name": "launch-config",
+  "displayName": "Launch Configs",
+  "description": "Create shortcuts to launch specific debug configurations.",
+  "publisher": "ArturoDent",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArturoDent/launch-config"
+  },
+  "main": "./src/extension.js",
+  "browser": "./src/extension.js",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Debuggers"
   ],
-  "configuration": {
-   "title": "launch-config",
-   "type": "object",
-   "properties": {
-    "launch-config.ifDebugSessionRunning": {
-     "type": "string",
-     "scope": "resource",
-     "enum": [
-      "stop/start",
-      "stop",
-      "restart",
-      "start"
-     ],
-     "enumDescriptions": [
-      "First stop the selected current debug session and then start it again.  Not the same as a restart.",
-      "If you attempt to start a currently running debug session, it will be stopped - this is the default condition.",
-      "Restart the selected launch configuration.",
-      "Start another debug session of the launch config - running sessions will not be stopped."
-     ],
-     "default": "stop",
-     "description": "Should the current debug session be stopped, stopped/started or restarted"
-    },
-    "launches": {}
-   }
+  "keywords": [
+    "launch",
+    "debug",
+    "keybinding"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "launches.showAllLaunchConfigs",
+        "title": "Show all launch configurations",
+        "category": "Launch Configs"
+      },
+      {
+        "command": "launches.focusNextDebugSession",
+        "title": "Focus the next debug session",
+        "category": "Launch Configs"
+      },
+      {
+        "command": "launches.focusPreviousDebugSession",
+        "title": "Focus the previous debug session",
+        "category": "Launch Configs"
+      }
+    ],
+    "configuration": {
+      "title": "launch-config",
+      "type": "object",
+      "properties": {
+        "launch-config.ifDebugSessionRunning": {
+          "type": "string",
+          "scope": "resource",
+          "enum": [
+            "stop/start",
+            "stop",
+            "restart",
+            "start"
+          ],
+          "enumDescriptions": [
+            "First stop the selected current debug session and then start it again.  Not the same as a restart.",
+            "If you attempt to start a currently running debug session, it will be stopped - this is the default condition.",
+            "Restart the selected launch configuration.",
+            "Start another debug session of the launch config - running sessions will not be stopped."
+          ],
+          "default": "stop",
+          "description": "Should the current debug session be stopped, stopped/started or restarted"
+        },
+        "launches": { }
+      }
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^24.13.3",
+    "@types/vscode": "~1.75.0",
+    "@vscode/test-electron": "^3.1.0",
+    "eslint": "^6.8.0",
+    "mocha": "^7.1.2",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "jsonc-parser": "^3.3.1"
   }
- },
- "scripts": {
-  "lint": "eslint .",
-  "pretest": "npm run lint",
-  "test": "node ./test/runTest.js"
- },
- "devDependencies": {
-  "@types/mocha": "^10.0.10",
-  "@types/node": "^24.13.3",
-  "@types/vscode": "~1.75.0",
-  "@vscode/test-electron": "^3.1.0",
-  "eslint": "^6.8.0",
-  "mocha": "^7.1.2",
-  "typescript": "^7.0.2"
- },
- "dependencies": {
-  "jsonc-parser": "^3.3.1"
- }
 }

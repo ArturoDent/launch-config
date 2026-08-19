@@ -313,7 +313,7 @@ For earlier release notes see the [CHANGELOG](CHANGELOG.md).
 &emsp;&emsp; &emsp; Fixed completions for keybindings commands and args.  
 &emsp;&emsp; &emsp; 0.8.2 &emsp; Added commands for navigating to the next/previous debug sessions in the call stack.  
 
-* 0.9.0 &emsp; Modify QuickPick listener to allow keyboard trigger (without mouse).  
+* 1.0.0 &emsp; Modify QuickPick listener to allow keyboard trigger (without mouse).  
 &emsp;&emsp; &emsp; Fixed the "Show all launch configurations" picker not closing after a selection was launched.  
 &emsp;&emsp; &emsp; Fixed launching from a file outside every workspace folder (or from a folder that just doesn't hold the target config) erroring instead of falling back correctly.  
 &emsp;&emsp; &emsp; Fixed `.vscode/settings.json` ("Folder Settings") configurations being shadowed, or resolved to the wrong folder on a name collision, when a `launch.json` also exists elsewhere in the workspace.  
