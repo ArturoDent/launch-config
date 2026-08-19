@@ -236,6 +236,8 @@ You will get intellisense in your `keybindings.json` file for the `launches.show
 
 ## Known Issues  
 
+See also [configSupport.md](configSupport.md) for the full matrix of what each configuration source (`launch.json`, User Settings, Workspace/Folder Settings, `.code-workspace`) can and can't reference from the others.
+
 1. The `restart` option does not work when re-launching a browser.  Example:  
 
 ```jsonc
@@ -267,9 +269,7 @@ When vscode starts this the first time, each debug session has a separate name a
 
 So this extension will simply stop and start the compound configuration, but not "restart" it (in some situations there is a difference).  `stop/start` works as an option; the `restart` option will do the same thing as `stop/start`.  
 
-3. In a multi-root workspace you can create launch configurations and compounds in a `*.code-workspace` file.  This extension is able to retrieve those but **cannot** scope a debugging session to that file.  Thus launch configurations in a `*.code-workspace` can not be used with this extension.  `vscode.debug.startDebugging(workspaceFolder|undefined, name|Configuration)` needs to be scoped to a workspaceFolder.  
-
-4. There is an unusual bug in vscode that pertains only to multi-root workspaces where you have at least two `launch.json` files with identically-named configurations that are used in a compound configuration.  So if you have this in *projectA's* `launch.json`:  
+3. There is an unusual bug in vscode that pertains only to multi-root workspaces where you have at least two `launch.json` files with identically-named configurations that are used in a compound configuration.  So if you have this in *projectA's* `launch.json`:  
 
 ```jsonc
 "compounds": [
@@ -290,7 +290,6 @@ Of course, you shouldn't have a compound config that lists a configuration that 
 
 ## TODO
 
-Explore retrieval of launch configs from `.code-workspace` files in a multi-root workspace.  
 Explore support for task arguments.  
 Explore generating a command directly from keybindings.  
 
@@ -315,5 +314,9 @@ For earlier release notes see the [CHANGELOG](CHANGELOG.md).
 &emsp;&emsp; &emsp; 0.8.2 &emsp; Added commands for navigating to the next/previous debug sessions in the call stack.  
 
 * 0.9.0 &emsp; Modify QuickPick listener to allow keyboard trigger (without mouse).  
+&emsp;&emsp; &emsp; Fixed the "Show all launch configurations" picker not closing after a selection was launched.  
+&emsp;&emsp; &emsp; Fixed launching from a file outside every workspace folder (or from a folder that just doesn't hold the target config) erroring instead of falling back correctly.  
+&emsp;&emsp; &emsp; Fixed `.vscode/settings.json` ("Folder Settings") configurations being shadowed, or resolved to the wrong folder on a name collision, when a `launch.json` also exists elsewhere in the workspace.  
+&emsp;&emsp; &emsp; `.code-workspace` configurations and compounds are now fully supported end-to-end - see [configSupport.md](configSupport.md); this corrects the old Known Issue about `.code-workspace` files, which no longer applies.  
 
 <br>  
