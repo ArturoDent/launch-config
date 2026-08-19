@@ -15,6 +15,7 @@
 				
 				// "${workspaceFolder}/../TestMultiRoot/.vscode/TestMultiRoot.code-workspace",
 				"${workspaceFolder}/../Test Bed",
+				// "${workspaceFolder}/../Test Bed/.vscode/Test Bed.code-workspace",
 				
 				"--extensionDevelopmentPath=${workspaceFolder}"
 			],

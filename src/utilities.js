@@ -1,4 +1,6 @@
 const vscode = require('vscode');
+/** @import { RootNode } from "./types" */
+
 
 /**
  * If multiple WorkSpaceFolders in the WorkSpace
@@ -8,8 +10,12 @@ exports.getActiveWorkspaceFolder  = function()  {
   const folders = vscode.workspace.workspaceFolders;
   if (!folders) vscode.window.showErrorMessage('There is no workspacefolder open.');
 
-  if (vscode.window.activeTextEditor)
-    return vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor.document.uri);
+  if (vscode.window.activeTextEditor) {
+    const wsURI = vscode.workspace.getWorkspaceFolder(vscode.window.activeTextEditor.document.uri);
+    if (wsURI) return wsURI;
+  }
+  
+  if (folders) return folders[0];
   else return undefined;
 };
 
@@ -38,16 +44,102 @@ exports.getUserSettingConfiguration = function (configName) {
   const mergedConfigs = launchConfigs.inspect('configurations');
   const mergedCompounds = launchConfigs.inspect('compounds');
 
+  let config2run;
   // get the merged.globalValue[n].name that matches config.name
-  let config2run = Object.values(mergedConfigs?.globalValue).filter(each => each.name === configName);
-  if (config2run.length) return config2run[0];
-
-  if (!config2run.length) config2run = Object.values(mergedCompounds?.globalValue).filter(each => each.name === configName);
-  if (config2run) vscode.window.showErrorMessage("Cannot use `compound` configurations from user settings.", { modal: false });
-  if (!config2run) vscode.window.showErrorMessage("Could not find a matching configuration in user settings.", { modal: false });
+  if (mergedConfigs?.globalValue) {
+    config2run = Object.values(mergedConfigs?.globalValue).filter(each => each.name === configName);
+    if (config2run.length) return config2run[0];
+  }
+  if (mergedCompounds?.globalValue) {
+    config2run = Object.values(mergedCompounds?.globalValue).filter(each => {
+      return each.name === configName;
+    });
+    if (config2run.length) return config2run[0];
+  }
+  if (!config2run) vscode.window.showErrorMessage("Could not find a matching configuration in user settings.", {modal: false});
 
   return null;
 };
+
+/**
+ * Get the launch config that matches the config name from "code-workspace" setting
+ * @param {vscode.WorkspaceFolder} workspace - from the chosen "code-workspace" setting * 
+ * @param {string} configName - from the chosen "code-workspace" setting
+ * @returns {vscode.DebugConfiguration | null}
+ */
+exports.getCodeWorkspaceConfiguration = function (workspace, configName) {
+
+  const launchConfigs = vscode.workspace.getConfiguration('launch', workspace.uri);
+  const mergedConfigs = launchConfigs.inspect('configurations');
+  const mergedCompounds = launchConfigs.inspect('compounds');
+
+  let config2run;
+  // get the merged.workspaceValue[n].name that matches the config.name
+  if (mergedConfigs?.workspaceValue) {
+    config2run = Object.values(mergedConfigs?.workspaceValue).filter(each => each.name === configName);
+    if (config2run.length) return config2run[0];
+  }
+  // else look at workspaceFolderValue, which will have launch.json configs
+  else if (mergedConfigs?.workspaceFolderValue) {
+    config2run = Object.values(mergedConfigs?.workspaceFolderValue).filter(each => each.name === configName);
+    if (config2run.length) return config2run[0];
+  }
+
+  // TODO cannot use compound configs from code-workspace or .vscode/settings.json?
+  if (mergedCompounds?.workspaceValue) {
+    config2run = Object.values(mergedCompounds?.workspaceValue).filter(each => {
+      return each.name === configName;
+    });
+    if (config2run.length) return config2run[0];
+  }
+  if (!config2run) vscode.window.showErrorMessage("Could not find a matching configuration in .code-workspace file.", {modal: false});
+
+  return null;
+};
+
+/**
+ * 
+ * @param {Map<string, RootNode> } wsRootNodes 
+ * @param {string} configName - from the chosen "code-workspace" setting
+ * @returns {Promise<vscode.DebugConfiguration | undefined>}
+ */
+exports.getWorkspaceSettingConfiguration = async function (wsRootNodes, configName) {
+  
+  for (const [, root] of wsRootNodes) {   // [wsName, root]
+
+    const theConfig = root?.configurations?.find(el => el.name === configName);
+    if (theConfig) return theConfig;
+    // const theCompound = root?.compounds?.find(el => el.name === configName);
+    // if (theCompound) return theCompound;
+  }
+  return undefined;
+}
+
+/**
+ * 
+ * @param {string} config 
+ * @returns 
+ */
+exports.parseConfigurationToREGroups = function (config) {
+  
+  // const userSettingsRE = /^(?<configName>.+?)(\s*\((?<folderName>[^)]+)\))?\s*\[(?<settings>User Settings)\]$/m;
+  const userSettingsRE = /^(?<configName>.+?)\s*\[(?<settings>User Settings)\]$/m;
+  
+  // const workspaceSettingsRE = /^(?<configName>.+?)\s*(\((?<folderName>[^)]+)\))?\s*\[(?<settings>\.vscode\/settings\.json)\]$/m;
+  const workspaceSettingsRE = /^(?<configName>.+?)\s*(\((?<folderName>[^)]+)\))?\s*\[(?<settings>Folder Settings)\]$/m;
+  // const workspaceSettingsRE = /^(?<configName>.+?)\s*\[(?<settings>\.vscode\/settings\.json)\]$/m;
+
+  const codeWorkspaceSettingsRE = /^(?<configName>.+?)\s*(\((?<folderName>[^)]+)\))?\s*\[(?<settings>code-workspace)\]$/m;
+  // const codeWorkspaceSettingsRE = /^(?<configName>.+?)\s*\[(?<settings>code-workspace)\]$/m;
+  
+  const launchJsonRE = /^(?<configName>.+?)\s*\((?<folderName>[^)]+)\)\s*\[(?<settings>launch.json)\]$/m;
+
+  const match = config.match(userSettingsRE) || config.match(workspaceSettingsRE)
+    || config.match(codeWorkspaceSettingsRE) || config.match(launchJsonRE);
+  
+  if (match) return match;
+  else return undefined;
+}
 
 
 /**
@@ -58,79 +150,34 @@ exports.getUserSettingConfiguration = function (configName) {
  * @typedef  {Object} Setting
  * @property {string}   fullName - 'launch config name (workspaceFolderName)'
  * @property {string}   folder - 'workspaceFolderName'
- * @property {string}   name - 'launch config name'* @property {string} name - 'launch config name'
- * @property {boolean}  setting - config from user setting? *
- * @returns {Setting}
+ * @property {string}   name - 'launch config name'
+ * @property {string|undefined}  setting - config from user setting? *
+ * @returns  {Setting}
  */
 exports.parseConfigurationName = function (name) {
 
   // Launch File (TestMultiRoot)
   // Launch File                          <== no workspace folder is allowed
 
-  // const regex = /^(?<configName>.+?)\s+\((?<folderName>[^)]+)\)$|^(?<configNameNoFolder>.+)$/m;
-  const regex = /(?<configName>.+?)\s*\((?<folderName>[^)]+)\)?\s*\[?(?<settings>Settings)?\]?|(?<configNameNoFolder>.+)/;
+  let match = module.exports.parseConfigurationToREGroups(name);
 
-  let match = name.match(regex);
-
-  if  (match?.groups) {
+  if (match?.groups) {
+    const {configName, folderName, settings} = match?.groups;
     return {
       fullName: match[0],
-      folder: match.groups.folderName,
-      // config: match.groups.configName ? match.groups.configName : match.groups.configNameNoFolder
-      name: match.groups.configName ? match.groups.configName : match.groups.configNameNoFolder,
-      setting: match.groups.settings ? true : false
+      folder: folderName,
+      // name: configName ? configName : configNameNoFolder,  // TODO
+      name: configName,
+      // setting: settings ? true : false
+      setting: settings || undefined
     };
   }
   else
     return {
       fullName: name,
       folder: '',
-      // config: ''
       name: '',
-      setting: false
+      // setting: false
+      setting: undefined
     };
-};
-
-/**
- * Get the User Setting launch config that matches the config name from "launches" setting
- * 
- * @returns {Object} configArray
- */
-exports.getAllConfigurations = function () {
-
-  let returnObject = {};
-  const launchConfigs = vscode.workspace.getConfiguration('launch');
-
-  const allValues = launchConfigs.inspect('configurations');
-  const allCompounds = launchConfigs.inspect('compounds');
-  let allConfigs = launchConfigs.configurations;
-  if (!allConfigs) vscode.window.showErrorMessage('Could not find any launch configurations.');
-
-  // TODO: what if there is an empty 'compound' object
-  if (!allValues?.globalValue) {
-    if (launchConfigs.compounds) allConfigs = allConfigs.concat(launchConfigs.compounds);
-    returnObject.workspaceValue = allConfigs;
-  }
-
-  else if (allValues?.globalValue && allValues.workspaceValue) {
-    let settingsConfigs;
-
-    if (allCompounds?.workspaceValue) allConfigs = allConfigs.concat(launchConfigs.compounds);
-    returnObject.workspaceValue = allConfigs;
-
-    if (allValues?.globalValue) settingsConfigs = allValues?.globalValue;
-    // if (allCompounds?.globalValue) settingsConfigs = settingsConfigs.concat(allCompounds.globalValue);
-    if (allCompounds?.globalValue)
-      vscode.window.showInformationMessage("Cannot use `compound` configurations from user settings. So any compound configurations in your user settings will not be shown as a possible completion.");
-    returnObject.globalValue = settingsConfigs;
-  }
-
-  else if (allValues?.globalValue && !allValues.workspaceValue) {
-    // if (allCompounds?.globalValue) allConfigs = allConfigs.concat(launchConfigs.compounds);
-    if (allCompounds?.globalValue)
-      vscode.window.showInformationMessage("Cannot use `compound` configurations from user settings. So any compound configurations in your user settings will not be shown as a possible completion.");
-    returnObject.globalValue = allConfigs;
-  }
-
-  return returnObject;
 };

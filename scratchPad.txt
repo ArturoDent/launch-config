@@ -1,105 +1,22 @@
-// const keybindingsPath = process.env.APPDATA + '\\Code\\User\\keybindings.json';
-  // let docFilter = [{ language: 'json', scheme: '*', pattern: keybindingsPath }];
-
-  // const configCompletionProvider = vscode.languages.registerCompletionItemProvider (
-  //   'json',
-  //   {
-  //      // eslint-disable-next-line no-unused-vars
-  //     provideCompletionItems(document, position, token, context) {
-
-  //       const launches = vscode.workspace.getConfiguration("launches");
-  //       let completionItemArray = [];
-  //       for (const name in launches) {
-  //         // skip the things that are not Strings
-  //         if ((typeof launches[name] !== 'string')) {
-  //             continue;
-  //         }
-  //         else {
-  //           completionItemArray.push(new vscode.CompletionItem(`"launches.${name}"`, vscode.CompletionItemKind.Text));
-  //         }
-  //       };
-  //        return completionItemArray;
-  //     }
-  //   },
-  //   ':' // trigger
-  // );
-
-	// context.subscriptions.push(configCompletionProvider);
-
-//  function getEditorInfo() {
-//     const editor = vscode.window.activeTextEditor;
-//     const resource = editor.document.uri;
-//     console.log(resource);  // fsPath, path, toString()
-//     return resource.fsPath;
-// }
-
 /**
- * @description - regex parse the configuration name into its components
- *
- * @param {string} name - launch configuration.name + (workspaceFolder)
- * @returns {Object} {name, folder, configName}
+ * @typedef  {Object} Inspect
+ * @property {'launch.configurations'|'launch.compounds'} key
+ * 
+ * @property {Array<import("vscode").DebugConfiguration>|undefined} defaultValue
+ * @property {Array<import("vscode").DebugConfiguration>|undefined} defaultLanguageValue
+ * 
+ * @property {Array<import("vscode").DebugConfiguration>|undefined} globalLocalLanguageValue
+ * @property {Array<import("vscode").DebugConfiguration>|undefined} globalLocalValue
+ * @property {Array<import("vscode").DebugConfiguration>|undefined} globalRemoteLanguageValue
+ * @property {Array<import("vscode").DebugConfiguration>|undefined} globalRemoteValue
+ * @property {Array<import("vscode").DebugConfiguration>|undefined} globalValue
+ * 
+ * @property {Array<import("vscode").DebugConfiguration>|undefined} workspaceFolderLanguageValue
+ * @property {Array<import("vscode").DebugConfiguration>|undefined} workspaceLanguageValue
+ * @property {Array<import("vscode").DebugConfiguration>|undefined} workspaceFolderValue
+ * @property {Array<import("vscode").DebugConfiguration>|undefined} workspaceValue
+ * 
+ * @property {string[]|undefined} langaugeIds
  */
-exports.parseConfigurationName = function (name) {
-
-  // Launch File (TestMultiRoot)
-  // Launch File                          <== no workspace folder is allowed
-
-  const regex = /^(.+?)\s+\(([^)]+)\)$|^(.+)$/m;
-
-  let [fullString, configName, folderName, configNameNoFolder] = name.match(regex);
-
-  return {
-    fullName: fullString,
-    folder: folderName,
-    config: configName ? configName : configNameNoFolder
-  }
-}
-
-/**
- * @description - start a debug session of the named launch configuration
- *
- * @param {string} name - the 'name' key of one launch configuration/compound
- * @param {string} arg - the keybinding arg: "stop" or "stop/start" or "restart"
- * @param {Set<vscode.DebugSession>} debugSessions - Set of debugSessions
- */
-exports.launchSelectedConfig = async function (name, arg, debugSessions) {
-
-  // if already running, check setting: launches.ifDebugSessionRunning and decide how to handle
-  const runningSession = handleDebugSession.isMatchingDebugSession(debugSessions, name);
-
-  if (runningSession.match) {
-    let handleStart;
-    if (!Array.isArray(arg)) handleStart = arg;
-    else handleStart = handleDebugSession.getStopStartSetting();
-
-    if (handleStart === "restart") handleDebugSession.restart(runningSession.session);
-    else if (handleStart === "stop/start") handleDebugSession.stopStart(runningSession.session, name);
-    else handleDebugSession.stop(runningSession.session);
-
-    return;
-  }
-
-  // name = "Launch Build.js (Project A Folder)"
-  // name = "Launch Build.js"
-
-  // const regex = /^(.+?)\s+\(([^)]*)\)$|^(.*)$/m;
-  let setting = utilities.parseConfigurationName(name);
-
-      // eslint-disable-next-line no-unused-vars
-  // let [fullString, configName, folderName, configNameNoFolder] = name.match(regex);
-
-  if (setting.folder === 'code-workspace') vscode.debug.startDebugging(undefined, setting.config);
-  else {
-    // check if folderName is empty, if so use the  workSpaceFolder of the active editor
-    let workspace = setting.folder
-      ? vscode.workspace.workspaceFolders.find(ws => ws.name === setting.folder)
-      : utilities.getActiveWorkspaceFolder();
-
-    await vscode.debug.startDebugging(workspace, setting.config);
-  }
-}
-
-f1  f2
-f3  f4
-f5  f6
-
+ 
+ 

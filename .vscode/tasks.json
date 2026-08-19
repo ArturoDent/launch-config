@@ -6,7 +6,24 @@
     {
       "label": "echo",
       "type": "shell",
-      "command": "echo Hello",
+      "command": "echo ${input:optionsList}",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new",
+        "showReuseMessage": true,
+        "clear": true
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "optionsList",
+      "description": "my optionsList description",
+      "default": "second",
+      "type": "pickString",
+      "options": ["first", "second", "third"]
     }
   ]
 }

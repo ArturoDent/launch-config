@@ -1,4 +1,4 @@
-<br/>
+# Options
 
 The setting **launch-config.ifDebugSessionRunning** has four options:  
 
@@ -28,9 +28,9 @@ In VS Code v1.53, a change was introduced so that when you try to launch a debug
 
 This extension will check the value of the setting `launch-config.ifDebugSessionRunning` in your `settings.json` file.  Thus, that running debug session will either be stopped (with no message notification), stopped and started again, restarted, or another concurrent session of the same launch configuration will be started.
 
-This setting will determine how any running debug session is handled when its keybinding is re-triggered (unless its keybinding has its own argument - see below).  Think of the setting as a global setting on how to handle all running debug sessions. 
+This setting will determine how any running debug session is handled when its keybinding is re-triggered (unless its keybinding has its own argument - see below).  Think of the setting as a global setting on how to handle all running debug sessions.  
 
-If you have no keybinding `args` and no `launch-config.ifDebugSessionRunning` setting, the default `stop` will be applied.  If you prefer a different result then set `launch-config.ifDebugSessionRunning` to one of the other options.   
+If you have no keybinding `args` and no `launch-config.ifDebugSessionRunning` setting, the default `stop` will be applied.  If you prefer a different result then set `launch-config.ifDebugSessionRunning` to one of the other options.  
 
 -----------------
 
@@ -48,7 +48,7 @@ But maybe you want some sessions stopped and others restarted, etc. - here is ho
     "command": "launches.File2",
     "arg": "restart"
   }
-``` 
+```
 
 Now, when `launches.File1` is running and you <kbd>alt</kbd>+<kbd>g</kbd> again (or whatever your chosen keybinding was), that matching debug session will be stopped.  But, if `launches.File2` was running, re-triggering its keybinding would restart that launch configuration.
 
@@ -58,5 +58,3 @@ Now, when `launches.File1` is running and you <kbd>alt</kbd>+<kbd>g</kbd> again 
 
 * See the [Known Issues](README.md) for an issue using the `restart` option to restart a browser launch.  
 * See the [Known Issues](README.md) for an issue using the `restart` option to restart a compound configuration.
-
-<br/>

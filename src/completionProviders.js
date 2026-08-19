@@ -1,5 +1,6 @@
 const vscode = require('vscode');
 const utilities = require('./utilities');
+const configs = require('./configs');
 
 
 /**
@@ -82,7 +83,6 @@ exports.makeSettingsCompletionProvider = function(context) {
             // },
 
         // get all text until the current `position` and check if it reads `:\s*"$` before the cursor
-        // const linePrefix = document.lineAt(position).text.substr(0, position.character);
         const linePrefix = document.lineAt(position).text.substring(0, position.character);
 
         // works in arrays as well
@@ -106,26 +106,20 @@ exports.makeSettingsCompletionProvider = function(context) {
           startPos = document.positionAt(launchMatch.index);  // "launches" index
           endPos = document.positionAt(launchMatch.index + launchMatch.groups.launches.length);
 
-
           let launchRange = new vscode.Range(startPos, endPos);
           if (!launchRange.contains(position)) return undefined;  // cursor is not in the 'launches' setting
         }
 
-        const workSpaceFolders = vscode.workspace.workspaceFolders;
-        let nameArray = getLaunchConfigNameArray(workSpaceFolders);
+        let nameMap = await configs.getLaunchConfigNameMap();
+        if (nameMap.size === 0) return [];  // return an empty array
 
-        if (nameArray.length === 0) return [];  // return an empty array
-
+        /** @type { vscode.CompletionItem[] } */
         let completionItemArray = [];
+        
+        nameMap.forEach((value, key) => {
+          completionItemArray.push(makeCompletionItem(key));
+        });
 
-        for (const item in nameArray) {
-          if ((typeof nameArray[item] !== 'string')) {
-              continue;
-          }
-          else {
-            completionItemArray.push(makeCompletionItem(nameArray[item]));
-          }
-        }
         return completionItemArray;
       }
     },
@@ -133,57 +127,6 @@ exports.makeSettingsCompletionProvider = function(context) {
   );
 
   context.subscriptions.push(settingsCompletionProvider);
-}
-
-/**
- * build an array of all config/compound launch names
- *
- * @param {readonly vscode.WorkspaceFolder[] | undefined} workSpaceFolders - an array
- * @returns {String[]} nameArray
- */
-function getLaunchConfigNameArray (workSpaceFolders) {
-
-  /** @type { Array<string> }*/
-  let nameArray = [];
-  
-  // C: \Users\markm\AppData\Roaming\Code - Insiders\User\settings.json
-  // let settingsConfigs = vscode.workspace.getConfiguration('launch', vscode.Uri.file('C: \Users\markm\AppData\Roaming\Code - Insiders\User\settings.json'));
-  // const values = settingsConfigs.get('configurations');
-  
-  if (workSpaceFolders) {
-    workSpaceFolders.forEach((workSpace) => {
-
-      // let launchConfigs = vscode.workspace.getConfiguration('launch', workSpace.uri);
-      const launchConfigs = utilities.getAllConfigurations();
- 
-      
-      // let configArray = launchConfigs.get('configurations');
-      // configArray = configArray.concat(launchConfigs.get('compounds'));
-
-      // TODO is this necessary - the padding part?
-      // configArray.forEach(( /** @type {{ name: string | any[]; }} */ config) => {
-      //   if (typeof config.name === 'string') {
-      //     // to move the folder name out to the right so they align better, easier to read
-      //     // let padding = (32 - config.name.length > 0) ? 32 - config.name.length : 1;
-      //     // let fill = ' '.padEnd(padding);
-      //     // nameArray.push(`${ config.name }${ fill }(${ workSpace.name })`);
-      //     nameArray.push(`${ config.name }  (${ workSpace.name })`);
-      //   }
-      // });
-      
-      Object.entries(launchConfigs).forEach(value => {
-        // @ts-ignore  noImplicitAny error
-        if (value[0] === 'workspaceValue') value[1].forEach(config => {
-          return nameArray.push(`${config.name}  (${workSpace.name})`);
-        });
-        // @ts-ignore  noImplicitAny error
-        else if (value[0] === 'globalValue') value[1].forEach(config => {
-          return nameArray.push(`${config.name}  (${workSpace.name}) [Settings]`);
-        });
-      });
-    });
-  }
-  return nameArray;
 }
 
 
@@ -195,26 +138,51 @@ function getLaunchConfigNameArray (workSpaceFolders) {
  */
 function makeCompletionItem(key) {
 
+  // this would have trouble if ) in wsName
+  let stripSpaces = /(\s{2,})(\([^)]*)(?!.*\()|(\s{2,})(\[[^\]]*\])$/g;
+  key = key.replace(stripSpaces, ' $2$4');
+  
   let item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Text);
   
-  // no longer necessary after 
+  const pos = vscode.window.activeTextEditor?.selection.active;
+  if (pos) item.range = new vscode.Range(pos, pos);
+  
   //  https://stackoverflow.com/questions/60001714/custom-extension-for-json-completion-does-not-work-in-double-quotes
   // item.range = new vscode.Range(position, position);
+  // it appears item.range = new vscode.Range(pos, pos); is still needed if select text between quotes and press Ctrl+Space
 
-  let setting = utilities.parseConfigurationName(key);
+  let configInfo = utilities.parseConfigurationName(key);
 
-  item.sortText = setting.folder;
+  // sort by User Settings/code-workspace/workSpace settings.json/launch.json
+  let sort = '';
+  if (configInfo.setting === 'User Settings') sort = '01';
+  else if (configInfo.setting === 'code-workspace') sort = '02';
+  // else if (configInfo.setting === '.vscode/settings.json') sort = '03';
+  else if (configInfo.setting === 'Folder Settings') sort = '03';
+  else if (configInfo.setting === 'launch.json') {
+    const index = vscode.workspace.workspaceFolders?.findIndex(ws => ws.name === configInfo.folder);
+    sort = '04' + index;
+  }
   
-  if (setting?.setting)
-    item.documentation = new vscode.MarkdownString(`This launch configuration is in the global user settings.`);
-  else
-    item.documentation = new vscode.MarkdownString(`This launch configuration is in the workspace: **${setting.folder}**`);
+  item.sortText = sort;  
+  item.detail = `from ${configInfo.setting}`;
   
-
-  // remove spaces added to align folders in completionProvider
-  let stripSpaces = /(\s{2,})(\([^)]+\))$/g;
-  item.insertText = key.replace(stripSpaces, ' $2');
+  const configLocation = configInfo?.setting;
+  
+  if (configLocation) {
+    if (configLocation === 'User Settings')
+      item.documentation = new vscode.MarkdownString(`This launch configuration is in the global user settings.`);
+    else if (configLocation === 'launch.json')
+      item.documentation = new vscode.MarkdownString(`This launch configuration is in ${configInfo.folder}'s *launch.json*.`);
+    else if (configLocation === 'code-workspace')
+      item.documentation = new vscode.MarkdownString(`This launch configuration is in the *.code-workspace* settings.`);
+    // else if (configLocation === '.vscode/settings.json')
+    else if (configLocation === 'Folder Settings')
+      item.documentation = new vscode.MarkdownString(`This launch configuration is a workspace setting located in *.vscode/settings.json*.`);
+  }
+  
+  // this would have trouble if ) in wsName
+  item.insertText = key.replace(stripSpaces, ' $2$4');
 
   return item;
 }
-exports.getLaunchConfigNameArray = getLaunchConfigNameArray;

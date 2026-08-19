@@ -2,6 +2,8 @@ const vscode = require('vscode');
 const launch = require('./launch');
 const utilities = require('./utilities');
 
+/** @import { QPItemWithData } from "./types" */
+
 
 /**
  * @description - restart the indicated debugSession
@@ -16,35 +18,16 @@ exports.restart = async function (session) {
  * @description - stop and then start the indicated debugSession
  *
  * @param {vscode.DebugSession} session
- * @param {string} name - launch configuration.name + (workspaceFolder)
+ * @param {QPItemWithData} qpItem
  */
-exports.stopStart = async function (session, name) {
+exports.stopStart = async function (session, qpItem) {
 
   await vscode.debug.stopDebugging(session);
 
   // Give it a moment to stop fully
   await new Promise(resolve => setTimeout(resolve, 1000));
 
-  //   let setting = utilities.parseConfigurationName(name);
-
-  //   if (setting.folder === 'code-workspace') vscode.debug.startDebugging(undefined, setting.config);
-  //   else {
-
-  //     // check if folderName is empty, if so use the  workSpaceFolder of the active editor
-
-  //     let workspace;
-
-  //     if (setting.folder && vscode.workspace.workspaceFolders)
-  //       workspace = vscode.workspace.workspaceFolders.find(ws => ws.name === setting.folder);
-  //     else workspace = utilities.getActiveWorkspaceFolder();
-
-  //     await vscode.debug.startDebugging(workspace, setting.config);
-  //     // this can probably be removed after v1.54 is released
-  //     // vscode.commands.executeCommand('workbench.debug.action.focusCallStackView');
-  //   }
-  // }
-  
-  await launch.startLaunch(name);
+  await launch.startLaunch(qpItem);
 }
 
 

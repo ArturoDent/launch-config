@@ -116,7 +116,7 @@ You will get intellisense in your `settings.json` for the 'name' of all possible
 
 <br>
 
-Although intellisense will automatically append the folder name, you do not need to use one.  If it is absent then the `activeEditorWorkSpace` will be used; so only the current workspaceFolder `launch.json` will be examined.  
+Although intellisense will **automatically** append the folder name, you do not need to use one.  If it is absent then the `activeEditorWorkSpace` will be used; so only the current workspaceFolder `launch.json` will be examined.  
 
 The `name` key and value can be anywhere within its configuration - it does not need to be first. An example `launch.json` file:  
 
@@ -168,7 +168,7 @@ This extension generates commands from settings created by the user. These gener
 
 <img src="https://github.com/ArturoDent/launch-config/blob/launchInSettings/images/shortcuts.gif?raw=true" width="1000" height="250" alt="Keybindings shortcuts demo"/>  
 
-1. This extension also provides one built-in command `launches.showAllLaunchConfigs` which opens a QuickPick panel of all available launch configurations.  From this panel you can select and run one or more configurations.  Note: there is no guarantee that the configs will be run in the order you select them as just an alphabetical list of selections is returned by vscode.  
+1. This extension also provides a command `launches.showAllLaunchConfigs` which opens a QuickPick panel of all available launch configurations.  From this panel you can select and run one or more configurations.  Note: there is no guarantee that the configs will be run in the order you select them as just an alphabetical list of selections is returned by vscode.  
 
 2. You can "select" any checkbox in the QuickPick by <kbd>Space</kbd> when that configuration is highlighted.  <kbd>Space</kbd> acts as a toggle to check or uncheck the checkbox.  Hit <kbd>Enter</kbd> when you have selected all checkboxes you want to run.  
 

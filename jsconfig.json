@@ -1,15 +1,23 @@
 {
-	"compilerOptions": {
+  "compilerOptions": {
     "strict": true,
-		"module": "commonjs",
-		"target": "ESNext",
-		"checkJs": true,  /* Typecheck .js files. */
-		"lib": [
-			// "es6"
-		],
-    "resolveJsonModule": true
-	},
-	"exclude": [
-		"node_modules"
-	]
+    "module": "node16",
+    "moduleResolution": "node16",
+    "target": "ESNext",
+    "checkJs": true, /* Typecheck .js files. */
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "resolveJsonModule": true,
+    "maxNodeModuleJsDepth": 0,
+    "types": [
+      "node",
+      "mocha",
+      "vscode"
+    ]
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }

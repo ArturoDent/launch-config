@@ -18,6 +18,7 @@
 		"no-undef": "warn",
 		"no-unreachable": "off",
 		"no-unused-vars": "warn",
-		"valid-typeof": "warn"
+		"valid-typeof": "warn",
+		"@typescript-eslint/prefer-readonly-parameter-types": "off"
 	}
 }
