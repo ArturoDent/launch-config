@@ -236,4 +236,54 @@ suite('launch-config: launches.* end-to-end', function () {
       }
     });
   });
+
+  suite('already-running detection (ifDebugSessionRunning)', function () {
+
+    // regression coverage for a bug where launchSelectedConfig's "is this
+    // config already running" check always resolved the parsed config name
+    // to '' (and, for Flutter/Dart sessions, couldn't see past the device
+    // name the adapter appends to session.name) - either way it never found
+    // a match, so a second launch always started a duplicate session instead
+    // of honoring launch-config.ifDebugSessionRunning
+
+    test('stop (default): launching the same config again stops the running session instead of duplicating it', async function () {
+
+      const config = vscode.workspace.getConfiguration();
+      const original = config.get('launch-config.ifDebugSessionRunning');
+      await config.update('launch-config.ifDebugSessionRunning', 'stop', vscode.ConfigurationTarget.Workspace);
+
+      /** @type {vscode.DebugSession | undefined} */
+      let session;
+
+      try {
+        session = await runAndAwaitSession('launches.testSimpleLaunchJson', 'LC Test: launch.json simple');
+        const sessionId = session.id;
+
+        const stoppedByExtension = new Promise((resolve, reject) => {
+          const timer = setTimeout(() => {
+            disposable.dispose();
+            reject(new Error('Timed out waiting for the already-running session to be stopped - a second, duplicate session was likely started instead'));
+          }, 10000);
+
+          const disposable = vscode.debug.onDidTerminateDebugSession(terminated => {
+            if (terminated.id === sessionId) {
+              clearTimeout(timer);
+              disposable.dispose();
+              resolve(undefined);
+            }
+          });
+        });
+
+        // relaunching the identical config should detect `session` as already
+        // running and stop it (the "stop" default) - not start a second,
+        // concurrent session alongside it
+        await vscode.commands.executeCommand('launches.testSimpleLaunchJson');
+        await stoppedByExtension;
+        session = undefined; // already terminated, nothing left to clean up
+      } finally {
+        if (session) await vscode.debug.stopDebugging(session); // leftover from a failed/timed-out run
+        await config.update('launch-config.ifDebugSessionRunning', original, vscode.ConfigurationTarget.Workspace);
+      }
+    });
+  });
 });

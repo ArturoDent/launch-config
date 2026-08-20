@@ -181,3 +181,27 @@ exports.parseConfigurationName = function (name) {
       setting: undefined
     };
 };
+
+
+/**
+ * @description - does a running debugSession correspond to the given (already-parsed)
+ * launch configuration name/folder
+ *
+ * @param {vscode.DebugSession} session
+ * @param {string} configName
+ * @param {string} [configFolder]
+ * @returns {boolean}
+ */
+exports.sessionMatchesConfig = function (session, configName, configFolder) {
+  if (!configName) return false;
+  if (configFolder && configFolder !== session.workspaceFolder?.name) return false;
+
+  // session.configuration.name is the original launch.json/compound-member "name",
+  // unaffected by any adapter that renames the *display* session.name (e.g. Flutter
+  // appending "(iPhone 14 Pro)" - the resolved configuration's name is untouched)
+  if (session.configuration?.name) return session.configuration.name === configName;
+
+  // fallback if configuration is ever unavailable: strip VS Code's own
+  // "<compound>: <child>" colon-delimited session naming
+  return session.name.replace(/(.*):.*$/m, '$1') === configName;
+};

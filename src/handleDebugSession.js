@@ -10,7 +10,7 @@ const utilities = require('./utilities');
  * @param {vscode.DebugSession} session
  */
 exports.restart = async function (session) {
-  vscode.commands.executeCommand('workbench.action.debug.restart', '', { sessionId: session.id } );
+  vscode.commands.executeCommand('workbench.action.debug.restart', '', {sessionId: session.id});
 }
 
 
@@ -67,19 +67,12 @@ exports.isMatchingDebugSession = function (debugSessions, name) {
   let config = utilities.parseConfigurationName(name);
 
   debugSessions.forEach(session => {
-
-    // if (session.name.replace(/(.*):.*$/m, '$1') === setting.config
-    //   && (!setting.folder || setting.folder === session.workspaceFolder?.name )) {
-    //     match = true;
-    //     matchSession = session;
-    // }
-    if (session.name.replace(/(.*):.*$/m, '$1') === config.name
-      && (!config.folder || config.folder === session.workspaceFolder?.name)) {
+    if (utilities.sessionMatchesConfig(session, config.name, config.folder)) {
       match = true;
       matchSession = session;
     }
   });
-  return { match: match, session: matchSession };
+  return {match, session: matchSession};
 }
 
 
@@ -104,13 +97,7 @@ exports.isMatchingCompoundDebugSessions = function (debugSessions, compoundArray
     let config = utilities.parseConfigurationName(name);
 
     debugSessions.forEach(session => {
-
-      // if (session.name.replace(/(.*):.*$/m, '$1') === setting.config
-      //   && (!setting.folder || setting.folder === session.workspaceFolder?.name)) {
-      //   matchSessions.push(session);
-      // }
-      if (session.name.replace(/(.*):.*$/m, '$1') === config.name
-        && (!config.folder || config.folder === session.workspaceFolder?.name)) {
+      if (utilities.sessionMatchesConfig(session, config.name, config.folder)) {
         matchSessions.push(session);
       }
     });

@@ -177,11 +177,11 @@ async function launchSelectedConfig(qpItem, arg, debugSessions) {
     else handleStart = handleDebugSession.getStopStartSetting(); // will change if task args are introduced
 
     // isCompoundConfig = isCompound(name);
-    isCompoundConfig = isCompound(qpItem.label);
+    isCompoundConfig = isCompound(qpItem.label + (qpItem.description ?? ''));
     if (isCompoundConfig.length)
       compoundSessionsMatch = handleDebugSession.isMatchingCompoundDebugSessions(debugSessions, isCompoundConfig);
     else
-      runningSession = handleDebugSession.isMatchingDebugSession(debugSessions, qpItem.label);
+      runningSession = handleDebugSession.isMatchingDebugSession(debugSessions, qpItem.label + (qpItem.description ?? ''));
   }
 
   // @ts-ignore
@@ -539,7 +539,7 @@ function isCompound(name) {
 
   if (match) {
     // @ts-ignore
-    return match.configurations.map(name => `${name}  (${parsedName.folder})`);
+    return match.configurations.map(name => `${name}   (${parsedName.folder})   [launch.json]`);
   }
   else return [];
 }

@@ -318,5 +318,6 @@ For earlier release notes see the [CHANGELOG](CHANGELOG.md).
 &emsp;&emsp; &emsp; Fixed launching from a file outside every workspace folder (or from a folder that just doesn't hold the target config) erroring instead of falling back correctly.  
 &emsp;&emsp; &emsp; Fixed `.vscode/settings.json` ("Folder Settings") configurations being shadowed, or resolved to the wrong folder on a name collision, when a `launch.json` also exists elsewhere in the workspace.  
 &emsp;&emsp; &emsp; `.code-workspace` configurations and compounds are now fully supported end-to-end - see [configSupport.md](configSupport.md); this corrects the old Known Issue about `.code-workspace` files, which no longer applies.  
+&emsp;&emsp; &emsp; 0.8.2 &emsp; Fixed session name matching.
 
 <br>  
